@@ -1,0 +1,10 @@
+{
+  "name": "videoconf_ws_srv",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Zingaya Inc. <info@voximplant.com> (http://voximplant.com)",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^7.2.3"
+  }
+}

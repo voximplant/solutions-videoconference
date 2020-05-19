@@ -1,0 +1,77 @@
+.conf__sidebar.sidebar--close {
+  display: none;
+}
+
+.conf__sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 350px;
+  background: #ffffff;
+  z-index: 40;
+}
+
+.conf__sidebar-header {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  padding-left: 28px;
+  padding-right: 8px;
+  height: 56px;
+  border-bottom: 1px solid #d8dce6;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  align-items: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+}
+
+.conf__sidebar-title {
+  color: #000000;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 14px;
+}
+
+.conf__sidebar-icon {
+  width: 25px;
+  height: 25px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-self: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  border-radius: 2px;
+  cursor: pointer;
+  -webkit-transition: background-color 0.3s ease;
+  -o-transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease;
+}
+
+.conf__sidebar-icon--close {
+  background: url(../img/icons/cross_14px.svg) center no-repeat #ffffff;
+}
+.conf__sidebar-icon--close:hover {
+  background-color: #f0edff;
+}
+
+.conf__sidebar-body {
+}
+
+.conf__sidebar-participants-list {
+  color: #000000;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 14px;
+}
