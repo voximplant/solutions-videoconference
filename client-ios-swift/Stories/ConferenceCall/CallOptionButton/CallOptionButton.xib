@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CallOptionButton" customModule="Conference" customModuleProvider="target">
+            <connections>
+                <outlet property="button" destination="0GZ-dd-9kn" id="mex-ju-h2k"/>
+                <outlet property="buttonDescriptionLabel" destination="yXs-0t-I4f" id="Osb-bl-91Y"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="65" height="65"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0GZ-dd-9kn" customClass="PressableButton" customModule="Conference" customModuleProvider="target">
+                    <rect key="frame" x="4" y="0.0" width="57" height="57"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="0GZ-dd-9kn" secondAttribute="height" multiplier="1:1" id="JBO-SO-N16"/>
+                    </constraints>
+                    <connections>
+                        <action selector="touchUpInside:" destination="-1" eventType="touchUpInside" id="DvP-1c-YId"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yXs-0t-I4f">
+                    <rect key="frame" x="32.5" y="65" width="0.0" height="0.0"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                    <variation key="heightClass=compact" hidden="YES"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="0GZ-dd-9kn" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="0lE-pI-Vc4"/>
+                <constraint firstItem="0GZ-dd-9kn" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="leading" id="5UR-Ki-ZNo"/>
+                <constraint firstAttribute="trailing" secondItem="0GZ-dd-9kn" secondAttribute="trailing" id="5WN-x0-x9K"/>
+                <constraint firstItem="0GZ-dd-9kn" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="8Xw-jr-MpA"/>
+                <constraint firstAttribute="bottom" secondItem="yXs-0t-I4f" secondAttribute="bottom" id="FyU-7w-5RN"/>
+                <constraint firstItem="yXs-0t-I4f" firstAttribute="top" secondItem="0GZ-dd-9kn" secondAttribute="bottom" constant="8" id="GlU-zI-tLM"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0GZ-dd-9kn" secondAttribute="trailing" id="HaB-e8-X4E"/>
+                <constraint firstItem="0GZ-dd-9kn" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Phd-yf-6ay"/>
+                <constraint firstItem="yXs-0t-I4f" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="ZAs-Jq-deU"/>
+                <constraint firstAttribute="bottom" secondItem="0GZ-dd-9kn" secondAttribute="bottom" id="mIm-Go-3Yh"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="5WN-x0-x9K"/>
+                    <exclude reference="Phd-yf-6ay"/>
+                    <exclude reference="mIm-Go-3Yh"/>
+                </mask>
+            </variation>
+            <variation key="heightClass=compact">
+                <mask key="subviews">
+                    <exclude reference="yXs-0t-I4f"/>
+                </mask>
+                <mask key="constraints">
+                    <include reference="mIm-Go-3Yh"/>
+                    <exclude reference="FyU-7w-5RN"/>
+                    <exclude reference="GlU-zI-tLM"/>
+                </mask>
+            </variation>
+            <variation key="heightClass=compact-widthClass=regular">
+                <mask key="constraints">
+                    <exclude reference="5UR-Ki-ZNo"/>
+                    <include reference="5WN-x0-x9K"/>
+                    <exclude reference="HaB-e8-X4E"/>
+                    <include reference="Phd-yf-6ay"/>
+                </mask>
+            </variation>
+            <point key="canvasLocation" x="-203.23660714285714" y="-221.01449275362322"/>
+        </view>
+    </objects>
+</document>
