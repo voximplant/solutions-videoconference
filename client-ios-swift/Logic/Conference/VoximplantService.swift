@@ -36,7 +36,7 @@ final class VoximplantService:
         return queue
     }()
     
-    required init(client: VIClient) {
+    init(client: VIClient) {
         self.client = client
         super.init()
         client.sessionDelegate = self
@@ -55,6 +55,7 @@ final class VoximplantService:
             conference: conference,
             ID: id,
             myName: name,
+            isSendingVideo: video,
             permissions: ConferencePermissions()
         )
         

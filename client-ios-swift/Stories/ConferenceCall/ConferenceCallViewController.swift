@@ -106,6 +106,8 @@ final class ConferenceCallViewController:
         socketView.isHidden = true
         socketView.layer.cornerRadius = 10
         
+        videoButton.state = video ? .normal : .selected
+        
         manageConference.observeVideoStream(conferenceView)
         manageConference.observeConference(self)
         manageConference.observeSocket(self)

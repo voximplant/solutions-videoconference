@@ -20,7 +20,7 @@ final class VoximplantSocketComplanion: NSObject, SRWebSocketDelegate {
     var commandObserver: ((VoximplantSocketCommand) -> Void)?
     var isConnectedObserver: ((Bool) -> Void)?
     
-    required init(sessionID: String, conference: String, socket: URL) {
+    init(sessionID: String, conference: String, socket: URL) {
         self.sessionID = sessionID
         self.conference = conference
         self.socketRequest = URLRequest(url: socket)
