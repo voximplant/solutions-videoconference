@@ -6,8 +6,9 @@ import UIKit
 
 final class ConferenceCallViewController:
     UIViewController,
-    AudioDeviceSelecting,
-    ConferenceObserver
+    AudioDeviceAlertSelecting,
+    ConferenceObserver,
+    SocketObserver
 {
     @IBOutlet private weak var conferenceView: ConferenceView!
     @IBOutlet private weak var muteButton: CallOptionButton!
@@ -102,15 +103,12 @@ final class ConferenceCallViewController:
             }
         )
         
-        socketView.layer.cornerRadius = 10
         socketView.isHidden = true
+        socketView.layer.cornerRadius = 10
         
-        manageConference.videoStreamObserver = conferenceView
-        manageConference.observer = self
-    }
-    
-    func socketConnected(_ connected: Bool) { // internal
-        socketView.backgroundColor = connected ? .green : #colorLiteral(red: 0.9610000253, green: 0.2939999998, blue: 0.3689999878, alpha: 1)
+        manageConference.observeVideoStream(conferenceView)
+        manageConference.observeConference(self)
+        manageConference.observeSocket(self)
     }
     
     // MARK: - ConferenceObserver -
@@ -170,11 +168,16 @@ final class ConferenceCallViewController:
         conferenceView.addParticipant(participant)
     }
     
-    func didRemoveParticioant(withID id: ParticipantID) {
+    func didRemoveParticipant(withID id: ParticipantID) {
         conferenceView.removeParticipant(withID: id)
     }
     
     func didUpdateParticipant(_ participant: ConferenceParticipant) {
         conferenceView.updateParticipant(participant)
+    }
+    
+    // MARK: - SocketObserver - 
+    func socketConnectedStateChanged(to connected: Bool) {
+        socketView.backgroundColor = connected ? .green : #colorLiteral(red: 0.9610000253, green: 0.2939999998, blue: 0.3689999878, alpha: 1)
     }
 }

@@ -4,161 +4,35 @@
 
 import VoxImplantSDK
 
-final class ManageConferenceUseCase: ManageConference {
+final class ManageConferenceUseCase:
+    ManageConference,
+    EndpointObserver,
+    ConnectionObserver
+{
     private let conferenceService: ConferenceService
     var participants: [ConferenceParticipant] = []
     
-    weak var observer: ConferenceObserver? {
-        didSet {
-            if let observer = observer {
-                conferenceService.endpointAddedHandler = { [weak self] id, name, place in
-                    guard let self = self else { return }
-                    if self[participantWithID: id] == nil {
-                        let participant = ConferenceParticipant(id: id, name: name, place: place)
-                        self.participants.append(participant)
-                        observer.didAddParticipant(participant)
-                    }
-                }
-                conferenceService.endpointRemovedHandler = { [weak self] id in
-                    guard let self = self else { return }
-                    if let index = self[indexOf: id] {
-                        self.participants.remove(at: index)
-                        observer.didRemoveParticioant(withID: id)
-                    }
-                }
-                conferenceService.endpointMuteUpdated = { [weak self] id, isMuted in
-                    guard let self = self else { return }
-                    if let index = self[indexOf: id],
-                        self.participants[index].isMuted != isMuted {
-                        self.participants[index].isMuted = isMuted
-                        observer.didUpdateParticipant(self.participants[index])
-                    }
-                }
-                conferenceService.endpointNameUpdated = { [weak self] id, name in
-                    guard let self = self else { return }
-                    if let index = self[indexOf: id],
-                        self.participants[index].name != name {
-                        self.participants[index].name = name
-                        observer.didUpdateParticipant(self.participants[index])
-                    }
-                }
-                conferenceService.endpointPlaceUpdated = { [weak self] id, place in
-                    guard let self = self else { return }
-                    if let index = self[indexOf: id],
-                        self.participants[index].place != place {
-                        self.participants[index].place = place
-                        observer.didUpdateParticipant(self.participants[index])
-                    }
-                }
-                conferenceService.endpointSendingVideoUpdated = { [weak self] id, isSending in
-                    guard let self = self else { return }
-                    if let index = self[indexOf: id],
-                        self.participants[index].isSendingVideo != isSending {
-                        self.participants[index].isSendingVideo = isSending
-                        observer.didUpdateParticipant(self.participants[index])
-                    }
-                }
-                conferenceService.endpointSharingScreenUpdated = { [weak self] id, isSharing in
-                    guard let self = self else { return }
-                    if let index = self[indexOf: id],
-                        self.participants[index].isSharingScreen != isSharing {
-                        self.participants[index].isSharingScreen = isSharing
-                        observer.didUpdateParticipant(self.participants[index])
-                    }
-                }
-                conferenceService.ownerUpdated = { [weak self] id in
-                    guard let self = self else { return }
-                    for participant in self.participants {
-                        let shouldBeOwner = participant.id == id
-                        if participant.isOwner != shouldBeOwner {
-                            self[participantWithID: id]?.isOwner = shouldBeOwner
-                            observer.didUpdateParticipant(participant)  
-                        }
-                    }
-                }
-                conferenceService.didConnect = {
-                    observer.didChangeState(to: .connected)
-                }
-                conferenceService.didFail = { error in
-                    observer.didChangeState(to: .ended(reason: .failed(error: error)))
-                }
-                conferenceService.didDisconnect = {
-                    observer.didChangeState(to: .ended(reason: .disconnected))
-                }
-                conferenceService.didBeginReconnecting = {
-                    observer.didChangeState(to: .reconnecting)
-                }
-                conferenceService.hasBeenKicked = {
-                    observer.didChangeState(to: .ended(reason: .kicked))
-                }
-                conferenceService.socketConnected = observer.socketConnected(_:)
-            } else {
-//                conferenceService.endpointAddedHandler = nil
-//                conferenceService.endpointRemovedHandler = nil
-//                conferenceService.endpointMuteUpdated = nil
-//                conferenceService.endpointNameUpdated = nil
-//                conferenceService.endpointPlaceUpdated = nil
-//                conferenceService.endpointSendingVideoUpdated = nil
-//                conferenceService.endpointSharingScreenUpdated = nil
-//                conferenceService.ownerUpdated = nil
-//                conferenceService.didConnect = nil
-//                conferenceService.didFail = nil
-//                conferenceService.didDisconnect = nil
-//                conferenceService.didBeginReconnecting = nil
-//                conferenceService.hasBeenKicked = nil
-//                conferenceService.socketConnected = nil
-            }
-        }
-    }
-    
-    weak var videoStreamObserver: VideoStreamObserver? {
-        didSet {
-            if let observer = videoStreamObserver {
-                conferenceService.localVideoStreamAddedHandler = { id, renderer in
-                    observer.didAddVideoStream(for: id, renderOn: renderer)
-                }
-                conferenceService.remoteVideoStreamAddedHandler = { id, renderer in
-                    observer.didAddVideoStream(for: id, renderOn: renderer)
-                }
-                conferenceService.localVideoStreamRemovedHandler = { id in
-                    observer.didRemoveVideoStream(for: id)
-                }
-                conferenceService.remoteVideoStreamRemovedHandler = { id in
-                    observer.didRemoveVideoStream(for: id)
-                }
-            } else {
-//                conferenceService.localVideoStreamAddedHandler = nil
-//                conferenceService.remoteVideoStreamAddedHandler = nil
-//                conferenceService.localVideoStreamRemovedHandler = nil
-//                conferenceService.remoteVideoStreamRemovedHandler = nil
-            }
-        }
-    }
+    private weak var videoStreamObserver: VideoStreamObserver?
+    private weak var conferenceObserver: ConferenceObserver?
+    private weak var socketObserver: SocketObserver?
     
     init(_ conferenceService: ConferenceService) {
         self.conferenceService = conferenceService
+        self.conferenceService.endpointObserver = self
+        self.conferenceService.connectionObserver = self
     }
     
-//    deinit {
-//        conferenceService.endpointAddedHandler = nil
-//        conferenceService.endpointRemovedHandler = nil
-//        conferenceService.endpointMuteUpdated = nil
-//        conferenceService.endpointNameUpdated = nil
-//        conferenceService.endpointPlaceUpdated = nil
-//        conferenceService.endpointSendingVideoUpdated = nil
-//        conferenceService.endpointSharingScreenUpdated = nil
-//        conferenceService.ownerUpdated = nil
-//        conferenceService.didConnect = nil
-//        conferenceService.didFail = nil
-//        conferenceService.didDisconnect = nil
-//        conferenceService.didBeginReconnecting = nil
-//        conferenceService.hasBeenKicked = nil
-//        conferenceService.socketConnected = nil
-//        conferenceService.localVideoStreamAddedHandler = nil
-//        conferenceService.remoteVideoStreamAddedHandler = nil
-//        conferenceService.localVideoStreamRemovedHandler = nil
-//        conferenceService.remoteVideoStreamRemovedHandler = nil
-//    }
+    func observeVideoStream(_ observer: VideoStreamObserver) {
+        conferenceService.videoStreamObserver = observer
+    }
+    
+    func observeConference(_ observer: ConferenceObserver) {
+        conferenceObserver = observer
+    }
+    
+    func observeSocket(_ observer: SocketObserver) {
+        conferenceService.socketObserver = observer
+    }
     
     func sendVideo(_ send: Bool, completion: @escaping (Error?) -> Void) {
         conferenceService.sendVideo(send, completion: completion)
@@ -172,6 +46,94 @@ final class ManageConferenceUseCase: ManageConference {
         conferenceService.switchCamera()
     }
     
+    // MARK: - EndpointObserver -
+    func endpointAdded(endpoint: EndpointID, name: String?, place: Int) {
+        if self[participantWithID: endpoint] == nil {
+            let participant = ConferenceParticipant(id: endpoint, name: name, place: place)
+            participants.append(participant)
+            conferenceObserver?.didAddParticipant(participant)
+        }
+    }
+    
+    func endpointRemoved(endpoint: EndpointID) {
+        if let index = self[indexOf: endpoint] {
+            participants.remove(at: index)
+            conferenceObserver?.didRemoveParticipant(withID: endpoint)
+        }
+    }
+    
+    func endpointMuteChanged(to mute: Bool, endpoint: EndpointID) {
+        if let index = self[indexOf: endpoint],
+            participants[index].isMuted != mute {
+            participants[index].isMuted = mute
+            conferenceObserver?.didUpdateParticipant(participants[index])
+        }
+    }
+    
+    func endpointSendingVideoChanged(to sendingVideo: Bool, endpoint: EndpointID) {
+        if let index = self[indexOf: endpoint],
+            participants[index].isSendingVideo != sendingVideo {
+            participants[index].isSendingVideo = sendingVideo
+            conferenceObserver?.didUpdateParticipant(participants[index])
+        }
+    }
+    
+    func endpointSharingScreenChanged(to sharingScreen: Bool, endpoint: EndpointID) {
+        if let index = self[indexOf: endpoint],
+            participants[index].isSharingScreen != sharingScreen {
+            participants[index].isSharingScreen = sharingScreen
+            conferenceObserver?.didUpdateParticipant(participants[index])
+        }
+    }
+    
+    func endpointNameChanged(to name: String?, endpoint: EndpointID) {
+        if let index = self[indexOf: endpoint],
+            participants[index].name != name {
+            participants[index].name = name
+            conferenceObserver?.didUpdateParticipant(participants[index])
+        }
+    }
+    
+    func endpointPlaceChanged(to place: Int, endpoint: EndpointID) {
+        if let index = self[indexOf: endpoint],
+            participants[index].place != place {
+            participants[index].place = place
+            conferenceObserver?.didUpdateParticipant(participants[index])
+        }
+    }
+    
+    func ownerChanged(to owner: EndpointID) {
+        for participant in participants {
+            let shouldBeOwner = participant.id == owner
+            if participant.isOwner != shouldBeOwner {
+                self[participantWithID: owner]?.isOwner = shouldBeOwner
+                conferenceObserver?.didUpdateParticipant(participant)
+            }
+        }
+    }
+    
+    // MARK: - ConnectionObserver -
+    func didConnect() {
+        conferenceObserver?.didChangeState(to: .connected)
+    }
+    
+    func didFail(with error: Error) {
+        conferenceObserver?.didChangeState(to: .ended(reason: .failed(error: error)))
+    }
+    
+    func didDisconnect() {
+        conferenceObserver?.didChangeState(to: .ended(reason: .disconnected))
+    }
+    
+    func hasBeenKicked() {
+        conferenceObserver?.didChangeState(to: .ended(reason: .kicked))
+    }
+    
+    func didBeginReconnecting() {
+        conferenceObserver?.didChangeState(to: .reconnecting)
+    }
+    
+    // MARK: - Private -
     private subscript(participantWithID id: ParticipantID) -> ConferenceParticipant? {
         get {
             participants.first(where: { $0.id == id })

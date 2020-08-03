@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7E029AE224D806C80052A705 /* SpeakerAutoselecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E029AE124D806C80052A705 /* SpeakerAutoselecting.swift */; };
+		7E029AE424D807110052A705 /* AudioDeviceAlertSelecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E029AE324D807110052A705 /* AudioDeviceAlertSelecting.swift */; };
 		7EBF1BAA24D446C4008446E7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7EBF1B7324D446C4008446E7 /* Assets.xcassets */; };
 		7EBF1BAB24D446C4008446E7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7EBF1B7424D446C4008446E7 /* LaunchScreen.storyboard */; };
 		7EBF1BAD24D446C4008446E7 /* ConferenceErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EBF1B7924D446C4008446E7 /* ConferenceErrors.swift */; };
@@ -69,6 +71,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7E029AE124D806C80052A705 /* SpeakerAutoselecting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakerAutoselecting.swift; sourceTree = "<group>"; };
+		7E029AE324D807110052A705 /* AudioDeviceAlertSelecting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceAlertSelecting.swift; sourceTree = "<group>"; };
 		7EBF1B2624D44616008446E7 /* Conference.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Conference.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EBF1B7324D446C4008446E7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7EBF1B7524D446C4008446E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -358,6 +362,8 @@
 				7EBF1BE324D4585D008446E7 /* NibLoadable.swift */,
 				7EBF1BE524D458A3008446E7 /* AudioDeviceSelecting.swift */,
 				7EBF1BE924D458EA008446E7 /* MovingWithKeyboard.swift */,
+				7E029AE124D806C80052A705 /* SpeakerAutoselecting.swift */,
+				7E029AE324D807110052A705 /* AudioDeviceAlertSelecting.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -524,9 +530,11 @@
 				7EBF1BC924D446C4008446E7 /* ConferenceService.swift in Sources */,
 				7EBF1BB624D446C4008446E7 /* Device.swift in Sources */,
 				7EBF1BC024D446C4008446E7 /* ConferenceView.swift in Sources */,
+				7E029AE424D807110052A705 /* AudioDeviceAlertSelecting.swift in Sources */,
 				7EBF1BC224D446C4008446E7 /* ConferenceCallViewController.swift in Sources */,
 				7EBF1BCD24D446C4008446E7 /* GetShareLinkUseCase.swift in Sources */,
 				7EBF1C0024D46902008446E7 /* PressableButton.swift in Sources */,
+				7E029AE224D806C80052A705 /* SpeakerAutoselecting.swift in Sources */,
 				7EBF1BBB24D446C4008446E7 /* ProgressView.swift in Sources */,
 				7EBF1BCE24D446C4008446E7 /* ManageConferenceUseCase.swift in Sources */,
 			);
@@ -675,7 +683,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = W9BHJBL635;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "$(SRCROOT)/Resources/Info.plist";
@@ -684,7 +692,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.voximplant.demos.Conference;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -697,7 +705,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = W9BHJBL635;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "$(SRCROOT)/Resources/Info.plist";
@@ -706,7 +714,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.voximplant.demos.Conference;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

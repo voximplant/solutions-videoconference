@@ -12,21 +12,17 @@ protocol ManageConference {
     func switchCamera()
     
     var participants: [ConferenceParticipant] { get }
-    var observer: ConferenceObserver? { get set }
-    var videoStreamObserver: VideoStreamObserver? { get set }
+    
+    func observeVideoStream(_ observer: VideoStreamObserver)
+    func observeConference(_ observer: ConferenceObserver)
+    func observeSocket(_ observer: SocketObserver)
 }
 
 protocol ConferenceObserver: AnyObject {
     func didChangeState(to state: ConferenceState)
     func didAddParticipant(_ participant: ConferenceParticipant)
-    func didRemoveParticioant(withID id: ParticipantID)
+    func didRemoveParticipant(withID id: ParticipantID)
     func didUpdateParticipant(_ participant: ConferenceParticipant)
-    func socketConnected(_ connected: Bool)
-}
-
-protocol VideoStreamObserver: AnyObject {
-    func didAddVideoStream(for participant: ParticipantID, renderOn: (VIVideoRendererView?) -> Void)
-    func didRemoveVideoStream(for participant: ParticipantID)
 }
 
 enum ConferenceState {

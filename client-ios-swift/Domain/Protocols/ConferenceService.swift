@@ -5,11 +5,6 @@
 import VoxImplantSDK
 
 typealias EndpointID = String
-typealias EndpointAdded = (EndpointID, String?, Int) -> Void
-typealias EndpointUpdated<T> = (EndpointID, T) -> Void
-typealias EndpointRemoved = (EndpointID) -> Void
-typealias VideoStreamAdded = (String, (VIVideoRendererView?) -> Void) -> Void
-typealias VideoStreamRemoved = (String) -> Void
 
 protocol ConferenceService: AnyObject {
     var conferenceID: String? { get }
@@ -22,27 +17,36 @@ protocol ConferenceService: AnyObject {
     func manuallyDisconnect(_ completion: (() -> Void)?)
     func cancelReconnect()
     
-    // Endpoint change handlers
-    var endpointAddedHandler: EndpointAdded? { get set }
-    var endpointMuteUpdated: EndpointUpdated<Bool>? { get set }
-    var endpointSendingVideoUpdated: EndpointUpdated<Bool>? { get set }
-    var endpointSharingScreenUpdated: EndpointUpdated<Bool>? { get set }
-    var endpointNameUpdated: EndpointUpdated<String?>? { get set }
-    var endpointPlaceUpdated: EndpointUpdated<Int>? { get set }
-    var endpointRemovedHandler: EndpointRemoved? { get set }
-    var ownerUpdated: ((EndpointID) -> Void)? { get set }
-    // Video stream handlers
-    var localVideoStreamAddedHandler: VideoStreamAdded? { get set }
-    var localVideoStreamRemovedHandler: VideoStreamRemoved? { get set }
-    var remoteVideoStreamAddedHandler: VideoStreamAdded? { get set }
-    var remoteVideoStreamRemovedHandler: VideoStreamRemoved? { get set }
-    // Connection handlers
-    var didConnect: (() -> Void)? { get set }
-    var didFail: ((Error) -> Void)? { get set }
-    var didDisconnect: (() -> Void)? { get set }
-    var hasBeenKicked: (() -> Void)? { get set }
-    var didBeginReconnecting: (() -> Void)? { get set }
-    
-    //internal
-    var socketConnected: ((Bool) -> Void)? { get set }
+    var endpointObserver: EndpointObserver? { get set }
+    var videoStreamObserver: VideoStreamObserver? { get set }
+    var connectionObserver: ConnectionObserver? { get set }
+    var socketObserver: SocketObserver? { get set }
+}
+
+protocol EndpointObserver: AnyObject {
+    func endpointAdded(endpoint: EndpointID, name: String?, place: Int)
+    func endpointRemoved(endpoint: EndpointID)
+    func endpointMuteChanged(to mute: Bool, endpoint: EndpointID)
+    func endpointSendingVideoChanged(to sendingVideo: Bool, endpoint: EndpointID)
+    func endpointSharingScreenChanged(to sharingScreen: Bool, endpoint: EndpointID)
+    func endpointNameChanged(to name: String?, endpoint: EndpointID)
+    func endpointPlaceChanged(to place: Int, endpoint: EndpointID)
+    func ownerChanged(to owner: EndpointID)
+}
+
+protocol VideoStreamObserver: AnyObject {
+    func didAddVideoStream(for participant: EndpointID, renderOn: (VIVideoRendererView?) -> Void)
+    func didRemoveVideoStream(for participant: EndpointID)
+}
+
+protocol ConnectionObserver: AnyObject {
+    func didConnect()
+    func didFail(with error: Error)
+    func didDisconnect()
+    func hasBeenKicked()
+    func didBeginReconnecting()
+}
+
+protocol SocketObserver: AnyObject {
+    func socketConnectedStateChanged(to connected: Bool)
 }

@@ -4,25 +4,15 @@
 
 import VoxImplantSDK
 
-protocol AudioDeviceSelecting where Self: UIViewController { }
+protocol AudioDeviceSelecting { }
 
 extension AudioDeviceSelecting {
-    func showAudioDevicesActionSheet(sourceView: UIView) {
-        let audioDevices = VIAudioManager.shared().availableAudioDevices()
-        let currentDevice = VIAudioManager.shared().currentAudioDevice()
-        AlertHelper.showActionSheet(
-            actions: audioDevices.map { device in
-                UIAlertAction(title: string(from: device, isCurrent: currentDevice.type == device.type), style: .default) { _ in
-                    VIAudioManager.shared().select(device)
-                }
-            },
-            sourceView: sourceView,
-            on: self
-        )
-    }
-    
-    private func string(from device: VIAudioDevice, isCurrent: Bool) -> String {
-        let formattedString = String(describing: device).replacingOccurrences(of: "VIAudioDevice", with: "")
-        return isCurrent ? "\(formattedString) (Current)" : formattedString
+    func selectIfAvailable(
+        _ audioDeviceType: VIAudioDeviceType,
+        from audioDevices: Set<VIAudioDevice> = VIAudioManager.shared().availableAudioDevices()
+    ) {
+        if let device = audioDevices.first(where: { $0.type == audioDeviceType }) {
+            VIAudioManager.shared().select(device)
+        }
     }
 }

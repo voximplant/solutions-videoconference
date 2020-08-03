@@ -12,7 +12,8 @@ final class VoximplantService:
     VIEndpointDelegate,
     VIAudioManagerDelegate,
     VIClientSessionDelegate,
-    Reconnecting
+    Reconnecting,
+    SpeakerAutoselecting
 {
     private let client: VIClient
     private var socketCompanion: VoximplantSocketComplanion?
@@ -20,28 +21,12 @@ final class VoximplantService:
     private var connectCompletion: ((Error?) -> Void)?
     private var disconnectCompletion: (() -> Void)?
     
-    var conferenceID: String? { managedConference?.ID }
+    weak var endpointObserver: EndpointObserver?
+    weak var videoStreamObserver: VideoStreamObserver?
+    weak var connectionObserver: ConnectionObserver?
+    weak var socketObserver: SocketObserver?
     
-    // Endpoint change handlers
-    var endpointAddedHandler: EndpointAdded?
-    var endpointMuteUpdated: EndpointUpdated<Bool>?
-    var endpointSendingVideoUpdated: EndpointUpdated<Bool>?
-    var endpointSharingScreenUpdated: EndpointUpdated<Bool>?
-    var endpointNameUpdated: EndpointUpdated<String?>?
-    var endpointPlaceUpdated: EndpointUpdated<Int>?
-    var endpointRemovedHandler: EndpointRemoved?
-    var ownerUpdated: ((EndpointID) -> Void)?
-    // Video stream handlers
-    var localVideoStreamAddedHandler: VideoStreamAdded?
-    var localVideoStreamRemovedHandler: VideoStreamRemoved?
-    var remoteVideoStreamAddedHandler: VideoStreamAdded?
-    var remoteVideoStreamRemovedHandler: VideoStreamRemoved?
-    // Connection handlers
-    var didConnect: (() -> Void)?
-    var didFail: ((Error) -> Void)?
-    var didDisconnect: (() -> Void)?
-    var hasBeenKicked: (() -> Void)?
-    var didBeginReconnecting: (() -> Void)?
+    var conferenceID: String? { managedConference?.ID }
     
     private var reconnectOperation: ReconnectOperation?
     private let serviceQueue: OperationQueue = {
@@ -76,9 +61,7 @@ final class VoximplantService:
         conference.start()
         conference.add(self)
         
-        if headphonesNotConnected {
-            changeAudioTo(.speaker)
-        }
+        selectSpeaker()
     }
     
     private func rejoinConference() throws {
@@ -111,9 +94,9 @@ final class VoximplantService:
         }
         
         if let preferedAudioDevice = oldConference.preferedAudioDevice {
-            changeAudioTo(preferedAudioDevice)
-        } else if headphonesNotConnected {
-            changeAudioTo(.speaker)
+            selectIfAvailable(preferedAudioDevice)
+        } else {
+            selectSpeaker()
         }
     }
     
@@ -128,7 +111,7 @@ final class VoximplantService:
         
         conferenceWrapper.conference.sendAudio = !mute
         managedConference?.isSendingAudio = !mute
-        endpointMuteUpdated?(myID, mute)
+        endpointObserver?.endpointMuteChanged(to: mute, endpoint: myID)
         
         do {
             try socketCompanion?.send(command: .isMuted(muted: mute))
@@ -153,7 +136,7 @@ final class VoximplantService:
             }
             
             self?.managedConference?.isSendingVideo = send
-            self?.endpointSendingVideoUpdated?(myID, send)
+            self?.endpointObserver?.endpointSendingVideoChanged(to: send, endpoint: myID)
             completion(nil)
             
             do {
@@ -175,7 +158,7 @@ final class VoximplantService:
                 completion(error)
                 return
             }
-            #error("Enter Voximplant account details")
+            #error("Enter Voximplant Account credentials")
             self?.client.login(
                 withUser: "",
                 password: "",
@@ -217,7 +200,7 @@ final class VoximplantService:
         } else {
             disconnectCompletion = {
                 self.disconnectCompletion = nil
-                self.didDisconnect?()
+                self.connectionObserver?.didDisconnect()
                 completion?()
             }
             client.disconnect()
@@ -227,7 +210,7 @@ final class VoximplantService:
     // MARK: - Reconnect
     private func reconnect(completion: @escaping (Error?) -> Void) {
         log("Did begin reconnecting ")
-        didBeginReconnecting?()
+        connectionObserver?.didBeginReconnecting()
         
         let reconnectOperation = ReconnectOperation(
             attemptsLimit: 6,
@@ -268,8 +251,8 @@ final class VoximplantService:
     
     // MARK: - VICallDelegate -
     func call(_ call: VICall, didConnectWithHeaders headers: [AnyHashable : Any]?) {
-        didConnect?()
-        endpointAddedHandler?(myID, managedConference?.myName, 0)
+        connectionObserver?.didConnect()
+        endpointObserver?.endpointAdded(endpoint: myID, name: managedConference?.myName, place: 0)
         if let headers = headers,
             let sessionID = headers[HeaderKey.sessionID] as? String,
             let conference = headers[HeaderKey.userID] as? String,
@@ -289,14 +272,14 @@ final class VoximplantService:
         if let headers = headers, headers[HeaderKey.kick] != nil {
             log("Has been kicked")
             manuallyDisconnect {
-                self.hasBeenKicked?()
+                self.connectionObserver?.hasBeenKicked()
             }
         } else {
             reconnect { error in
                 log("Reconnect ended \(error != nil ? "with error \((error as? ReconnectError)?.localizedDescription ?? "")" : "")")
                 if let error = error {
                     self.manuallyDisconnect {
-                        self.didFail?(error)
+                        self.connectionObserver?.didFail(with: error)
                     }
                 }
                 self.reconnectOperation?.cancel()
@@ -309,20 +292,20 @@ final class VoximplantService:
         if managedConference?.ended ?? true { return }
         managedConference?.ended = true
         manuallyDisconnect {
-            self.didFail?(error)
+            self.connectionObserver?.didFail(with: error)
         }
     }
     
     func call(_ call: VICall, didAddLocalVideoStream videoStream: VIVideoStream) {
-        localVideoStreamAddedHandler?(myID) { renderer in
+        videoStreamObserver?.didAddVideoStream(for: myID, renderOn: { renderer in
             if let renderer = renderer {
                 videoStream.addRenderer(renderer)
             }
-        }
+        })
     }
     
     func call(_ call: VICall, didRemoveLocalVideoStream videoStream: VIVideoStream) {
-        localVideoStreamRemovedHandler?(myID)
+        videoStreamObserver?.didRemoveVideoStream(for: myID)
         videoStream.removeAllRenderers()
     }
     
@@ -330,10 +313,10 @@ final class VoximplantService:
         if endpoint.endpointId == managedConference?.conference.callId { return }
         log("didAdd endpoint displayName: \(endpoint.userDisplayName ?? "nil") user: \(endpoint.user ?? "nil") id: \(endpoint.endpointId)")
         endpoint.delegate = self
-        endpointAddedHandler?(
-            endpoint.endpointId,
-            endpoint.userDisplayName ?? endpoint.user,
-            Int(truncating: endpoint.place ?? 0)
+        endpointObserver?.endpointAdded(
+            endpoint: endpoint.endpointId,
+            name: endpoint.userDisplayName ?? endpoint.user,
+            place: Int(truncating: endpoint.place ?? 0)
         )
     }
     
@@ -341,24 +324,30 @@ final class VoximplantService:
     func endpointInfoDidUpdate(_ endpoint: VIEndpoint) {
         if endpoint.endpointId == managedConference?.conference.callId { return }
         log("endpointInfoDidUpdate displayName: \(endpoint.userDisplayName ?? "nil") user: \(endpoint.user ?? "") id: \(endpoint.endpointId)")
-        endpointPlaceUpdated?(endpoint.endpointId, Int(truncating: endpoint.place ?? 0))
-        endpointNameUpdated?(endpoint.endpointId, endpoint.userDisplayName ?? endpoint.user)
+        endpointObserver?.endpointPlaceChanged(
+            to: Int(truncating: endpoint.place ?? 0),
+            endpoint: endpoint.endpointId
+        )
+        endpointObserver?.endpointNameChanged(
+            to: endpoint.userDisplayName ?? endpoint.user,
+            endpoint: endpoint.endpointId
+        )
     }
     
     func endpointDidRemove(_ endpoint: VIEndpoint) {
-        endpointRemovedHandler?(endpoint.endpointId)
+        endpointObserver?.endpointRemoved(endpoint: endpoint.endpointId)
     }
     
     func endpoint(_ endpoint: VIEndpoint, didAddRemoteVideoStream videoStream: VIVideoStream) {
-        remoteVideoStreamAddedHandler?(endpoint.endpointId) { renderer in
+        videoStreamObserver?.didAddVideoStream(for: endpoint.endpointId, renderOn: { renderer in
             if let renderer = renderer {
                 videoStream.addRenderer(renderer)
             }
-        }
+        })
     }
     
     func endpoint(_ endpoint: VIEndpoint, didRemoveRemoteVideoStream videoStream: VIVideoStream) {
-        remoteVideoStreamRemovedHandler?(endpoint.endpointId)
+        videoStreamObserver?.didRemoveVideoStream(for: endpoint.endpointId)
         videoStream.removeAllRenderers()
     }
     
@@ -372,9 +361,7 @@ final class VoximplantService:
     func audioDeviceUnavailable(_ audioDevice: VIAudioDevice) { }
     
     func audioDevicesListChanged(_ availableAudioDevices: Set<VIAudioDevice>) {
-        if headphonesNotConnected {
-            changeAudioTo(.speaker, from: availableAudioDevices)
-        }
+        selectSpeaker(from: availableAudioDevices)
     }
     
     // MARK: - Private -
@@ -389,7 +376,7 @@ final class VoximplantService:
     }
     
     private func socketConnectionObserver(isConnected connected: Bool) {
-        socketConnected?(connected) // internal
+        socketObserver?.socketConnectedStateChanged(to: connected)
         if connected {
             do {
                 guard let conferenceWrapper = managedConference else {
@@ -411,8 +398,6 @@ final class VoximplantService:
         }
     }
     
-    var socketConnected: ((Bool) -> Void)? // internal
-    
     private func didReceive(command: VoximplantSocketCommand) {
         switch command {
         case .changeLevel(let level):
@@ -429,35 +414,22 @@ final class VoximplantService:
             log("Did receive command change sharing to \(allowed)")
         case .owner(let id):
             // todo: save owner to permissions
-            ownerUpdated?(id)
+            endpointObserver?.ownerChanged(to: id)
         case .isMuted(let isMuted, let id):
             if let id = id {
-                endpointMuteUpdated?(id, isMuted)
+                endpointObserver?.endpointMuteChanged(to: isMuted, endpoint: id)
             }
         case .isSendingVideo(let sending, let id):
             if let id = id {
-                endpointSendingVideoUpdated?(id, sending)
+                endpointObserver?.endpointSendingVideoChanged(to: sending, endpoint: id)
             }
         case .isSharingScreen(let sharing, let id):
             if let id = id {
-                endpointSharingScreenUpdated?(id, sharing)
+                endpointObserver?.endpointSharingScreenChanged(to: sharing, endpoint: id)
             }
         default:
             log("Did receive unhandled command \(command)")
             break
-        }
-    }
-    
-    private var headphonesNotConnected: Bool {
-        !VIAudioManager.shared().availableAudioDevices().contains { $0.type == .wired || $0.type == .bluetooth }
-    }
-    
-    private func changeAudioTo(
-        _ audioDeviceType: VIAudioDeviceType,
-        from audioDevices: Set<VIAudioDevice> = VIAudioManager.shared().availableAudioDevices()
-    ) {
-        if let device = audioDevices.first(where: { $0.type == audioDeviceType }) {
-            VIAudioManager.shared().select(device)
         }
     }
     
