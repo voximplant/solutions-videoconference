@@ -121,6 +121,23 @@ button {
   overflow: hidden;
 }
 
+button.button_toggle_left {
+  border-radius: 4px 0px 0px 4px;
+}
+button.button_toggle_right {
+  border-radius:  0px 4px 4px 0px;
+}
+button.button_toggle_active {
+  background: #662eff;
+  border:solid 1px #662eff;
+}
+button.button_toggle_inactive {
+  background: #ffffff;
+  border:solid 1px #662eff;
+  color: #662eff;
+}
+
+
 @keyframes rot {
   0% {
     transform: rotate(0deg);

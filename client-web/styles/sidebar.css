@@ -42,6 +42,23 @@
   line-height: 14px;
 }
 
+.conf__sidebar-toggles {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 10px 0px 0px 24px;
+}
+
+.conf__sidebar-people .conf__sidebar-body-chat,
+.conf__sidebar-chat .conf__sidebar-body-people{
+  display: none;
+}
+
+.conf__sidebar-people .conf__sidebar-body-people,
+.conf__sidebar-chat .conf__sidebar-body-chat{
+  display: block;
+}
+
 .conf__sidebar-icon {
   width: 25px;
   height: 25px;

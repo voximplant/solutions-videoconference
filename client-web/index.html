@@ -771,12 +771,32 @@
 
       <aside class="conf__sidebar sidebar--close js__sidebar">
         <div class="conf__sidebar-header">
-          <p class="conf__sidebar-title">Users</p>
+          <div class="conf__sidebar-toggles">
+            <button class="button button_toggle_left button_toggle_active" type="button">
+              <span>Chat</span>
+            </button>
+            <button class="button button_toggle_right button_toggle_inactive" type="button">
+              <span>People</span>
+            </button>
+          </div>
+
           <button class="conf__sidebar-icon conf__sidebar-icon--close js__close-sidebar"></button>
         </div>
-        <div class="conf__sidebar-sub_header">In the room</div>
-        <div class="conf__sidebar-body">
-          <ul class="conf__sidebar-participants-list"></ul>
+        <div class="conf__sidebar-container conf__sidebar-chat">
+
+          <div class="conf__sidebar-body-people">
+            <div class="conf__sidebar-sub_header">In the room</div>
+            <div class="conf__sidebar-body">
+              <ul class="conf__sidebar-participants-list"></ul>
+            </div>
+          </div>
+
+          <div class="conf__sidebar-body-chat">
+            <div class="conf__sidebar-body">
+              <ul class="conf__sidebar-participants-list"></ul>
+            </div>
+          </div>
+
         </div>
       </aside>
     </div>

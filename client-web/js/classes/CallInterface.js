@@ -16,6 +16,10 @@ export default class CallInterface {
     this.chat = document.querySelector('.js__chat');
     this.leave = document.querySelector('.js__leave');
     this.sidebar = document.querySelector('.js__sidebar');
+    this.toggleButtonChat = document.querySelector('.button_toggle_left');
+    this.toggleButtonPeople = document.querySelector('.button_toggle_right');
+    this.sidebarContainer = document.querySelector('.conf__sidebar-container');
+
     this.addEventListeners();
     this.sdk = window.VoxImplant.getInstance();
     VoxImplant.getInstance()
@@ -42,6 +46,24 @@ export default class CallInterface {
     this.leave.addEventListener('click', () => {
       this.leaveRoom();
     });
+
+    this.toggleButtonChat.addEventListener('click', () => {
+      this.toggleButtonChat.classList.toggle('button_toggle_active');
+      this.toggleButtonPeople.classList.toggle('button_toggle_active');
+      this.toggleButtonChat.classList.toggle('button_toggle_inactive');
+      this.toggleButtonPeople.classList.toggle('button_toggle_inactive');
+      this.sidebarContainer.classList.toggle('conf__sidebar-chat');
+      this.sidebarContainer.classList.toggle('conf__sidebar-people');
+    });
+    this.toggleButtonPeople.addEventListener('click', () => {
+      this.toggleButtonChat.classList.toggle('button_toggle_active');
+      this.toggleButtonPeople.classList.toggle('button_toggle_active');
+      this.toggleButtonChat.classList.toggle('button_toggle_inactive');
+      this.toggleButtonPeople.classList.toggle('button_toggle_inactive');
+      this.sidebarContainer.classList.toggle('conf__sidebar-chat');
+      this.sidebarContainer.classList.toggle('conf__sidebar-people');
+    });
+
 
     document.querySelector('.js__close-sidebar').addEventListener('click', () => {
       this.sidebar.classList.toggle('sidebar--close');
