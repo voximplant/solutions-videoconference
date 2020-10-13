@@ -1,4 +1,4 @@
-'use strict';
+
 
 import { WSService } from './WSService.js';
 import { calculateVideoGrid, setVideoSectionWidth } from '../video.js';
@@ -7,6 +7,7 @@ import { currentUser } from './User.js';
 import { LayerManager } from './LayerManager.js';
 import { SDKService } from './SDKService.js';
 import { registerCallbacks } from './HotkeyManager.js';
+import { ChatManager } from "./ChatManager.js";
 
 const container = document.getElementById('js__workbench');
 const inviteForm = document.querySelector('.js__invite-form');
@@ -50,6 +51,9 @@ export default class CallManager {
     );
     CallManager.currentConf.on(window.VoxImplant.CallEvents.Disconnected, (e) =>
       this.onCallDisconnected(e)
+    );
+    CallManager.currentConf.on(window.VoxImplant.CallEvents.MessageReceived, (e) =>
+      this.onMessageReceived(e)
     );
     CallManager.currentConf.on(window.VoxImplant.CallEvents.Failed, (e) => this.onCallFailed(e));
     CallManager.currentConf.on(window.VoxImplant.CallEvents.EndpointAdded, (e) =>
@@ -112,6 +116,25 @@ export default class CallManager {
     }
   }
 
+  onMessageReceived(e) {
+    console.log(`[WebSDk] message received:`, e);
+    let payload = JSON.parse(e.text);
+    const messenger = window.VoxImplant.getMessenger();
+    if(payload.owner){
+      console.log('payload for owner', payload);
+      if(!payload.roomId) {
+        ChatManager.create();
+      } else {
+        ChatManager.join(payload.roomId);
+      }
+    }else {
+      console.log('payload for non-owner', payload);
+      if(payload.roomId) {
+        ChatManager.join(payload.roomId);
+      }
+    }
+
+  }
   onCallFailed(e) {
     console.warn(`[WebSDk] Call failed ID: ${e.call.id()}`);
     SDKService.reconnect();
