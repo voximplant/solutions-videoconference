@@ -3,31 +3,43 @@ import {AbstractLogging} from "./AbstractLogging.js";
 class ChatManagerClass extends AbstractLogging{
   constructor() {
     super("ChatManagerClass");
-    this._messenger;
-    this.roomId = '';
+    this._messenger = undefined;
+    this.conversation = undefined;
     this.isOwner = false;
   }
  // we need it after authorized
   get messenger(){
     if(!this._messenger) {
-      this._messenger= window.VoxImplant.getMessenger();
+      this._messenger = window.VoxImplant.getMessenger();
+      this.bindEvents();
     }
     return this._messenger;
   }
+
+  bindEvents(){
+    this._messenger.on(VoxImplant.Messaging.MessengerEvents.SendMessage,(e)=>{
+      this.logging(' new message', e);
+    })
+  }
+
 
   get call(){
     return window['currentCall'];
   }
 
+  get roomId(){
+    return this.conversation && this.conversation.uuid;
+  }
 
 
   create(){
     this.logging('create new conversation');
     const title = '';
-    this.messenger.createConversation([], title, false)
+    this.messenger.createConversation([], title, false, true)
         //CreateConversationEvent
         .then( e => {
-          this.roomId = e.conversation.uuid;
+          this.conversation = e.conversation;
+
           this.isOwner = true;
           const message = `{"event":"set_room_id","roomId":"${this.roomId}"}`;
           this.call.sendMessage(message);
@@ -39,21 +51,65 @@ class ChatManagerClass extends AbstractLogging{
   }
 
   join(roomId){
-    this.roomId = roomId;
-    if(this.isOwner){
-      this.logging('already joined to exist conversation', this.roomId);
+    if (this.roomId){
+      this.logging(`already joined to exist conversation roodId${this.roomId}. Skip join to:${roomId}`);
       return;
     }
-    this.logging('join to exist conversation', this.roomId);
-    this.messenger.joinConversation(this.roomId)
+    this.logging('join to exist conversation', roomId);
+    this.messenger.getConversation(roomId)
         //https://voximplant.com/docs/references/websdk/voximplant/messaging/eventhandlers/editconversationevent
         .then(e=>{
           this.logging('Success! joined to exist conversation');
+          this.conversation = e.conversation;
+          this.sendMessage('ping');
         })
         .catch(reason => {
           this.error('Fail join to conversation', reason);
         })
   }
+
+  getLastMessages(){
+    if(this.conversation){
+      this.conversation.retransmitEvents(100)
+        // RetransmitEventsEvent
+        .then(ev=>{
+          //RetransmittedEvent[]
+           ev.events
+               //RetransmittedEvent
+               .forEach(event=>this.addMessageByEvent(event))
+        });
+    } else {
+      this.warn('Trying to get last messages from non-existing conversation')
+    }
+  }
+  connectionId;
+  setConnectionId(connectionId){
+    this.connectionId = connectionId;
+  }
+  setDisplayName(name){
+    this.displayName = name;
+  }
+
+  messages = [];
+  /**
+   * RetransmittedEvent
+   * @param event
+   */
+  addMessageByEvent(event){
+    this.messages.push(event.message);
+  }
+
+  /**
+   * От кого именно это сообщение - будем хранить вот тут
+   * (https://voximplant.com/docs/references/websdk/voximplant/messaging/message#conversation) в формате
+   * {displayName:'DISPLAY_NAME', connectionId:'CONNECTION_ID'}  CONNECTION_ID нужно брать тот же, что и отправляется в заголовке 'X-UUID' в callConference
+   * @param text
+   */
+  sendMessage(text){
+    this.conversation.sendMessage(text,[{displayName:this.displayName, connectionId:this.connectionId}])
+  }
+
+
 }
 
 const ChatManager = new ChatManagerClass();

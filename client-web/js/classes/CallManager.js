@@ -34,7 +34,10 @@ export default class CallManager {
     this.soundRemoved = document.getElementById('js__ep_removed_sound');
     this.soundRemoved.volume = 0.5;
     registerCallbacks(this.callInterface);
+    this.updateChatManager(currentUser);
   }
+
+
 
   static disconnect() {
     CallManager.currentConf.off(window.VoxImplant.CallEvents.Connected);
@@ -308,5 +311,10 @@ export default class CallManager {
         setVideoSectionWidth();
       }, 0);
     }
+  }
+
+  updateChatManager(currentUser) {
+    ChatManager.setConnectionId(currentUser.uuid);
+    ChatManager.setDisplayName(currentUser.name);
   }
 }
