@@ -63,7 +63,7 @@ class ChatManagerClass extends AbstractLogging{
           this.logging('Success! joined to exist conversation');
           this.conversation = e.conversation;
           this.getLastMessages();
-          this.sendMessage('ping');
+          //this.sendMessage('ping');
         })
         .catch(reason => {
           this.error('Fail join to conversation', reason);
@@ -72,7 +72,12 @@ class ChatManagerClass extends AbstractLogging{
 
   getLastMessages(){
     if(this.conversation){
-      this.conversation.retransmitEvents(100)
+      let first = 1;
+      let last = this.conversation.lastSeq;
+      if(this.conversation.lastSeq>99){
+        first = this.conversation.lastSeq - 99;
+      }
+      this.conversation.retransmitEvents(first,last)
         // RetransmitEventsEvent
         .then(ev=>{
           //RetransmittedEvent[]
@@ -102,8 +107,10 @@ class ChatManagerClass extends AbstractLogging{
    * @param event
    */
   addMessageByEvent(event){
-    this.messages.push(event.message);
-    this.addChatMessage(event.message);
+    if(event.message) {
+      this.messages.push(event.message);
+      this.addChatMessage(event.message);
+    }
   }
   // handler to CallInterface
   addChatMessage=()=>{}
