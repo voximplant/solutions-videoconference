@@ -59,6 +59,60 @@
   display: block;
 }
 
+.conf__sidebar-body-chat .conf__sidebar-body{
+  display: flex;
+  flex-direction: column;
+}
+
+.conf__sidebar-chat-message-list{
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  border: #ff005c;
+  color: black;
+}
+.conf__sidebar-chat-message-list .chat_message{
+  width: 100%;
+}
+.conf__sidebar-chat-message-list .chat_message_mine {
+  text-align: right;
+}
+
+.conf__sidebar-chat-message-list .chat_name {
+  color: grey;
+  font-size: 10px;
+}
+.conf__sidebar-chat-message-list .chat_text {
+  font-size: 10px;
+}
+.conf__sidebar-chat-message-list .chat_info {
+  font-size: 7px;
+  color: #d8dce6;
+}
+
+.conf__sidebar-chat-message-list .chat_message_mine .chat_text {
+  color: #4824a2;
+}
+
+.conf__sidebar-chat-message-list .chat_message_mine .chat_text {
+  color: #0aacff;
+}
+
+
+.conf__sidebar-chat-message-input-container{
+  height: 40px;
+  width: 100%;
+  border: solid 1px #00dc7d;
+  position: fixed;
+  bottom: 50px;
+}
+.conf__sidebar-chat-message-sendButton{
+
+}
+.conf__sidebar-chat-message-input{
+
+}
+
 .conf__sidebar-icon {
   width: 25px;
   height: 25px;

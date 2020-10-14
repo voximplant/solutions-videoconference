@@ -19,6 +19,7 @@ class ChatManagerClass extends AbstractLogging{
   bindEvents(){
     this._messenger.on(VoxImplant.Messaging.MessengerEvents.SendMessage,(e)=>{
       this.logging(' new message', e);
+      this.addMessageByEvent(e);
     })
   }
 
@@ -61,6 +62,7 @@ class ChatManagerClass extends AbstractLogging{
         .then(e=>{
           this.logging('Success! joined to exist conversation');
           this.conversation = e.conversation;
+          this.getLastMessages();
           this.sendMessage('ping');
         })
         .catch(reason => {
@@ -77,7 +79,11 @@ class ChatManagerClass extends AbstractLogging{
            ev.events
                //RetransmittedEvent
                .forEach(event=>this.addMessageByEvent(event))
-        });
+        })
+          .catch(e=>{
+            this.warn(" retransmitEvents fail", JSON.stringify(e));
+          })
+      ;
     } else {
       this.warn('Trying to get last messages from non-existing conversation')
     }
@@ -97,7 +103,11 @@ class ChatManagerClass extends AbstractLogging{
    */
   addMessageByEvent(event){
     this.messages.push(event.message);
+    this.addChatMessage(event.message);
   }
+  // handler to CallInterface
+  addChatMessage=()=>{}
+
 
   /**
    * От кого именно это сообщение - будем хранить вот тут
@@ -105,7 +115,7 @@ class ChatManagerClass extends AbstractLogging{
    * {displayName:'DISPLAY_NAME', connectionId:'CONNECTION_ID'}  CONNECTION_ID нужно брать тот же, что и отправляется в заголовке 'X-UUID' в callConference
    * @param text
    */
-  sendMessage(text){
+  sendMessage = (text) =>{
     this.conversation.sendMessage(text,[{displayName:this.displayName, connectionId:this.connectionId}])
   }
 

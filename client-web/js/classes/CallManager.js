@@ -316,5 +316,7 @@ export default class CallManager {
   updateChatManager(currentUser) {
     ChatManager.setConnectionId(currentUser.uuid);
     ChatManager.setDisplayName(currentUser.name);
+    this.callInterface.registerMessageHandlers(ChatManager.sendMessage, ChatManager.addChatMessage);
+    ChatManager.addChatMessage = this.callInterface.addChatMessage;
   }
 }

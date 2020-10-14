@@ -20,6 +20,10 @@ export default class CallInterface {
     this.toggleButtonPeople = document.querySelector('.button_toggle_right');
     this.sidebarContainer = document.querySelector('.conf__sidebar-container');
 
+    this.messageList = document.querySelector('.conf__sidebar-chat-message-list');
+    this.messageInput = document.querySelector('.conf__sidebar-chat-message-input');
+    this.messageSendButton = document.querySelector('.conf__sidebar-chat-message-sendButton');
+
     this.addEventListeners();
     this.sdk = window.VoxImplant.getInstance();
     VoxImplant.getInstance()
@@ -64,6 +68,10 @@ export default class CallInterface {
       this.sidebarContainer.classList.toggle('conf__sidebar-people');
     });
 
+    this.messageSendButton.addEventListener('click', () => {
+      this.addNewMessage();
+    })
+
 
     document.querySelector('.js__close-sidebar').addEventListener('click', () => {
       this.sidebar.classList.toggle('sidebar--close');
@@ -76,6 +84,45 @@ export default class CallInterface {
     WSService.addEventListener('vad', (e) => {
       this.displayVad(e);
     });
+  }
+
+
+  addNewMessageCallback=()=>{};
+
+  registerMessageHandlers(addNewMessageCallback, addChatMessage  ){
+    this.addNewMessageCallback = addNewMessageCallback;
+   // addChatMessage = this.addChatMessage;
+  }
+
+  addNewMessage(){
+    if (this.messageInput.value) {
+      const text = ""+this.messageInput.value;
+      this.addNewMessageCallback(text);
+      this.messageInput.value = "";
+    }
+  }
+
+  renderChatTemplate(message) {
+    let elementId = 'js_message_other';
+    const payload = message.payload[0];
+    if (currentUser.name === payload.displayName ){
+      elementId = 'js_message_mine'
+    }
+
+    const template = document.getElementById(elementId);
+    template.content.querySelector('.chat_message').id = message.uuid;
+
+    template.content.querySelector('.chat_name').textContent = payload.displayName;
+    template.content.querySelector('.chat_text').textContent = message.text;
+    template.content.querySelector('.chat_info').textContent = JSON.stringify(message);
+    return document.importNode(template.content, true);
+  }
+
+  //TODO update message
+  addChatMessage=(message)=>{
+    let li = document.createElement('li');
+    li.appendChild(this.renderChatTemplate(message));
+    this.messageList.appendChild(li);
   }
 
   toggleStatus(e) {

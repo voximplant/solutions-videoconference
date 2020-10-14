@@ -792,8 +792,11 @@
           </div>
 
           <div class="conf__sidebar-body-chat">
-            <div class="conf__sidebar-body">
-              <ul class="conf__sidebar-participants-list"></ul>
+            <div class="conf__sidebar-body ">
+              <ul class="conf__sidebar-chat-message-list"></ul>
+              <div class="conf__sidebar-chat-message-input-container">
+                <input class="conf__sidebar-chat-message-input" value=""/> <button class="conf__sidebar-chat-message-sendButton" >Send</button>
+              </div>
             </div>
           </div>
 
@@ -919,6 +922,22 @@
       </li>
     </template>
     <div id="hiddenRemote" style="display: none !important;"></div>
+
+    <template id="js_message_mine">
+      <div class="chat_message chat_message_mine">
+        <div class="chat_name"></div>
+        <div class="chat_text"></div>
+        <div class="chat_info"></div>
+      </div>
+    </template>
+    <template id="js_message_other">
+      <div class="chat_message chat_message_mine">
+        <div class="chat_name"></div>
+        <div class="chat_text"></div>
+        <div class="chat_info"></div>
+      </div>
+    </template>
+
     <script src="vendor/voximplant.min.js"></script>
     <script src="js/customSelect.js"></script>
     <script type="module" src="js/settingsForm.js"></script>
