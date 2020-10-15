@@ -44,10 +44,15 @@
 
 .conf__sidebar-toggles {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 10px 0px 0px 24px;
+  justify-content: center;
+  width: 290px;
+
 }
+
+.conf__sidebar-container{
+  height: calc(100vh - 140px)
+}
+
 
 .conf__sidebar-people .conf__sidebar-body-chat,
 .conf__sidebar-chat .conf__sidebar-body-people{
@@ -57,6 +62,7 @@
 .conf__sidebar-people .conf__sidebar-body-people,
 .conf__sidebar-chat .conf__sidebar-body-chat{
   display: block;
+  height: 100%;
 }
 
 .conf__sidebar-body-chat .conf__sidebar-body{
@@ -65,52 +71,117 @@
 }
 
 .conf__sidebar-chat-message-list{
-  flex-grow: 1;
+
   width: 100%;
   height: 100%;
   border: #ff005c;
   color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 .conf__sidebar-chat-message-list .chat_message{
   width: 100%;
 }
+
+.conf__sidebar-chat-message-list .chat_message_container{
+  width: 280px;
+  margin: 12px;
+}
 .conf__sidebar-chat-message-list .chat_message_mine {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+}
+.conf__sidebar-chat-message-list .chat_message_other {
+  display: flex;
+  justify-content: flex-start;
 }
 
-.conf__sidebar-chat-message-list .chat_name {
-  color: grey;
-  font-size: 10px;
+.conf__sidebar-chat-message-list .chat_message_info {
+  display: flex;
+  width: 100%;
 }
-.conf__sidebar-chat-message-list .chat_text {
-  font-size: 10px;
+
+.conf__sidebar-chat-message-list .chat_message_mine  .chat_message_info {
+  justify-content: flex-end;
 }
-.conf__sidebar-chat-message-list .chat_info {
+
+.conf__sidebar-chat-message-list .chat_message_other  .chat_message_info {
+  justify-content: flex-start;
+}
+
+.conf__sidebar-chat-message-list .message_name {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #000000;
+  text-align: right;
+}
+.conf__sidebar-chat-message-list .message_time {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 22px;
+  color: #9BA9BB;
+  min-width: 50px;
+  text-align: right;
+}
+.conf__sidebar-chat-message-list .message_text {
+
+  width: 100%;
+  border-radius: 4px;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 10px;
+  text-align: left;
+  overflow-wrap: break-word;
+
+}
+.conf__sidebar-chat-message-list .message_info {
   font-size: 7px;
   color: #d8dce6;
 }
 
-.conf__sidebar-chat-message-list .chat_message_mine .chat_text {
-  color: #4824a2;
+.conf__sidebar-chat-message-list .chat_message_mine .message_text {
+  background: linear-gradient(96.03deg, #662EFF 0%, #662EFF 100%);
+  color: #FFFFFF;
 }
 
-.conf__sidebar-chat-message-list .chat_message_mine .chat_text {
-  color: #0aacff;
+.conf__sidebar-chat-message-list .chat_message_other .message_text {
+  background: #F0F4FA;
+  color: #000000;
 }
 
 
 .conf__sidebar-chat-message-input-container{
   height: 40px;
-  width: 100%;
-  border: solid 1px #00dc7d;
+  width: 350px;
+
   position: fixed;
   bottom: 50px;
+  display: flex;
+  border-top: solid 1px black;
+  justify-content: space-between;
 }
 .conf__sidebar-chat-message-sendButton{
-
+  width: 60px;
+  height: 40px;
 }
-.conf__sidebar-chat-message-input{
-
+input.conf__sidebar-chat-message-input {
+  border: none;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 20px;
+  width: 280px;
+  margin-left: 8px;
 }
 
 .conf__sidebar-icon {
@@ -138,6 +209,7 @@
 }
 
 .conf__sidebar-body {
+  height: 100%;
 }
 
 .conf__sidebar-participants-list {

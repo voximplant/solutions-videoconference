@@ -1,11 +1,11 @@
 'use strict';
 
-import { WSService } from './WSService.js';
+import {WSService} from './WSService.js';
 import CallManager from './CallManager.js';
-import { currentUser } from './User.js';
-import { LayerManager } from './LayerManager.js';
-import { showLeaveForm } from '../leaveForm.js';
-import { unregisterCallback } from './HotkeyManager.js';
+import {currentUser} from './User.js';
+import {LayerManager} from './LayerManager.js';
+import {showLeaveForm} from '../leaveForm.js';
+import {unregisterCallback} from './HotkeyManager.js';
 
 export default class CallInterface {
   constructor() {
@@ -103,19 +103,21 @@ export default class CallInterface {
   }
 
   renderChatTemplate(message) {
-    let elementId = 'js_message_other';
+    let className = 'chat_message_other';
     const payload = message.payload[0];
     if (currentUser.name === payload.displayName ){
-      elementId = 'js_message_mine'
+      className = 'chat_message_mine'
     }
 
-    const template = document.getElementById(elementId);
-    template.content.querySelector('.chat_message').id = message.uuid;
-
-    template.content.querySelector('.chat_name').textContent = payload.displayName;
-    template.content.querySelector('.chat_text').textContent = message.text;
-    template.content.querySelector('.chat_info').textContent = JSON.stringify(message);
-    return document.importNode(template.content, true);
+    const template = document.importNode(document.getElementById('js_message').content, true);
+    template.querySelector('.chat_message').id = message.uuid;
+    template.querySelector('.chat_message').classList.add(className)
+    template.querySelector('.message_name').textContent = payload.displayName;
+    template.querySelector('.message_text').textContent = message.text;
+    const time = new Date().toLocaleTimeString('en-US', {'timeStyle':"short"});
+    template.querySelector('.message_time').textContent = time;
+    //template.querySelector('.message_info').textContent = JSON.stringify(message);
+    return template;
   }
 
   //TODO update message
