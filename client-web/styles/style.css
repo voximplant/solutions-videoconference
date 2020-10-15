@@ -914,7 +914,7 @@ button.button_toggle_inactive {
 }
 
 .conf__info-footer {
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;

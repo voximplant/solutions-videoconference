@@ -123,7 +123,7 @@ class ChatManagerClass extends AbstractLogging{
    * @param text
    */
   sendMessage = (text) =>{
-    this.conversation.sendMessage(text,[{displayName:this.displayName, connectionId:this.connectionId}])
+    this.conversation.sendMessage(text,[{displayName:this.displayName, connectionId:this.connectionId, time:Date.now()}])
   }
 
 

@@ -114,10 +114,28 @@ export default class CallInterface {
     template.querySelector('.chat_message').classList.add(className)
     template.querySelector('.message_name').textContent = payload.displayName;
     template.querySelector('.message_text').textContent = message.text;
-    const time = new Date().toLocaleTimeString('en-US', {'timeStyle':"short"});
+    template.querySelector('.message_text').innerHTML = this.processAnchorMe(template.querySelector('.message_text').textContent);
+
+    const time = new Date(payload.time).toLocaleTimeString('en-US', {'timeStyle':"short"});
     template.querySelector('.message_time').textContent = time;
     //template.querySelector('.message_info').textContent = JSON.stringify(message);
     return template;
+  }
+  //detect links / URLs / Emails in text and convert them to clickable HTML anchor links.
+  processAnchorMe(input) {
+    return anchorme({
+      input,
+      // use some options
+      options: {
+        // any link that has with "google.com/search?"
+        // will be truncated to 40 characters,
+        // github links will not be truncated
+        // other links will truncated to 10 characters
+        truncate: 40,
+        // characters will be taken out of the middle
+        middleTruncation: true
+      },
+    });
   }
 
   //TODO update message

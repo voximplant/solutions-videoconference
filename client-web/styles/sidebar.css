@@ -9,7 +9,7 @@
   height: 100vh;
   width: 350px;
   background: #ffffff;
-  z-index: 40;
+  z-index: 140;
 }
 
 .conf__sidebar-header {
@@ -50,7 +50,7 @@
 }
 
 .conf__sidebar-container{
-  height: calc(100vh - 140px)
+  height: calc(100vh - 115px)
 }
 
 
@@ -153,10 +153,19 @@
   color: #FFFFFF;
 }
 
+.conf__sidebar-chat-message-list .chat_message_mine a{
+  color: #f5f5f5;
+}
+
 .conf__sidebar-chat-message-list .chat_message_other .message_text {
   background: #F0F4FA;
   color: #000000;
 }
+
+.conf__sidebar-chat-message-list .chat_message_other a{
+  color: #0c0c0c;
+}
+
 
 
 .conf__sidebar-chat-message-input-container{
@@ -164,7 +173,7 @@
   width: 350px;
 
   position: fixed;
-  bottom: 50px;
+  bottom: 5px;
   display: flex;
   border-top: solid 1px black;
   justify-content: space-between;
