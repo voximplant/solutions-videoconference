@@ -1,4 +1,4 @@
-const CONNECTION_STRING = 'wss://irbisadm.dev/videoconf';
+const CONNECTION_STRING = '';
 
 class WSServiceClass {
   constructor(connectionString) {
