@@ -1,3 +1,5 @@
+'use strict';
+
 let callInterface;
 function registerCallbacks(ci) {
   callInterface = ci;

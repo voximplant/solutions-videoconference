@@ -1,3 +1,5 @@
+'use strict';
+
 const CONNECTION_STRING = '';
 
 class WSServiceClass {

@@ -20,6 +20,7 @@ export default class CallInterface {
     this.toggleButtonPeople = document.querySelector('.button_toggle_right');
     this.sidebarContainer = document.querySelector('.conf__sidebar-container');
 
+    this.messageSound = document.querySelector('.js__message_sound');
     this.messageList = document.querySelector('.conf__sidebar-chat-message-list');
     this.messageInput = document.querySelector('.conf__sidebar-chat-message-input');
     this.messageSendButton = document.querySelector('.conf__sidebar-chat-message-sendButton');
@@ -72,6 +73,11 @@ export default class CallInterface {
       this.addNewMessage();
     })
 
+    this.messageInput.addEventListener('keypress',ev=>{
+      if(ev.code==='Enter')
+        this.addNewMessage();
+    })
+
 
     document.querySelector('.js__close-sidebar').addEventListener('click', () => {
       this.sidebar.classList.toggle('sidebar--close');
@@ -107,6 +113,8 @@ export default class CallInterface {
     const payload = message.payload[0];
     if (currentUser.name === payload.displayName ){
       className = 'chat_message_mine'
+    } else {
+      this.messageSound.play()
     }
 
     const template = document.importNode(document.getElementById('js_message').content, true);

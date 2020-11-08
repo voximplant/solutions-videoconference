@@ -1,3 +1,5 @@
+'use strict';
+
 import Env from './Env.js';
 
 let localStream = null;

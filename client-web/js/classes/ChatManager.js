@@ -1,3 +1,5 @@
+'use strict';
+
 import {AbstractLogging} from "./AbstractLogging.js";
 
 class ChatManagerClass extends AbstractLogging{
@@ -117,9 +119,9 @@ class ChatManagerClass extends AbstractLogging{
 
 
   /**
-   * От кого именно это сообщение - будем хранить вот тут
-   * (https://voximplant.com/docs/references/websdk/voximplant/messaging/message#conversation) в формате
-   * {displayName:'DISPLAY_NAME', connectionId:'CONNECTION_ID'}  CONNECTION_ID нужно брать тот же, что и отправляется в заголовке 'X-UUID' в callConference
+   * Sender will store here
+   * (https://voximplant.com/docs/references/websdk/voximplant/messaging/message#conversation) in the format
+   * {displayName:'DISPLAY_NAME', connectionId:'CONNECTION_ID'}  CONNECTION_ID will from 'X-UUID' at callConference
    * @param text
    */
   sendMessage = (text) =>{
