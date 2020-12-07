@@ -1,4 +1,4 @@
-
+'use strict';
 
 import { WSService } from './WSService.js';
 import { calculateVideoGrid, setVideoSectionWidth } from '../video.js';
