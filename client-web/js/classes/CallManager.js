@@ -20,6 +20,7 @@ export default class CallManager {
     settingsApplyButton.disabled = true;
     settingsApplyButton.classList.add('loading');
     CallManager.currentConf = window.VoxImplant.getInstance().callConference(newCallParams);
+    console.log('call inited',newCallParams)
     CallManager.reporter = callReporter(
       CallManager.currentConf,
       currentUser.name,
@@ -44,6 +45,7 @@ export default class CallManager {
     CallManager.currentConf.off(window.VoxImplant.CallEvents.Disconnected);
     CallManager.currentConf.off(window.VoxImplant.CallEvents.Failed);
     CallManager.currentConf.off(window.VoxImplant.CallEvents.EndpointAdded);
+    CallManager.currentConf.off(window.VoxImplant.CallEvents.MessageReceived);
     CallManager.currentConf.hangup();
   }
 

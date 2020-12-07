@@ -109,14 +109,14 @@ export default class CallInterface {
       className = 'chat_message_mine'
     }
 
-    const template = document.importNode(document.getElementById('js_message').content, true);
+    const template = document.importNode(document.getElementById('js_chat_message').content, true);
     template.querySelector('.chat_message').id = message.uuid;
     template.querySelector('.chat_message').classList.add(className)
     template.querySelector('.message_name').textContent = payload.displayName;
     template.querySelector('.message_text').textContent = message.text;
     template.querySelector('.message_text').innerHTML = this.processAnchorMe(template.querySelector('.message_text').textContent);
 
-    const time = new Date(payload.time).toLocaleTimeString('en-US', {'timeStyle':"short"});
+    const time = new Date(payload.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     template.querySelector('.message_time').textContent = time;
     //template.querySelector('.message_info').textContent = JSON.stringify(message);
     return template;
