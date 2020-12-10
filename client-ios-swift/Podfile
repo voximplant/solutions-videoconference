@@ -6,7 +6,7 @@ target 'Conference' do
   use_frameworks!
 
   pod 'CocoaLumberjack/Swift', '~> 3.5'
-  pod 'VoxImplantSDK/CocoaLumberjackLogger', '2.34.0'
+  pod 'VoxImplantSDK/CocoaLumberjackLogger', '2.35.0'
   pod 'SocketRocket'
 end
 
