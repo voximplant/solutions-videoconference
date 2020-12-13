@@ -225,7 +225,7 @@ export default class CallManager {
           .getElementById(e.endpoint.id)
           .querySelector('.conf__video-fullscreen');
         if (fullscreen) {
-          if (!document.fullscreenEnabled) {
+          if (!screenfull.isEnabled) {
             fullscreen.style.display = 'none';
           } else {
             fullscreen.addEventListener('click', (event) => {

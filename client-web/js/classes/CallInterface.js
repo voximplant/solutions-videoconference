@@ -297,17 +297,20 @@ export default class CallInterface {
     CallManager.disconnect();
     showLeaveForm();
   }
-
+  attribute={};
   toggleFullScreen(participantId) {
     const participantFrame = document.getElementById(participantId);
     const confFooter = document.querySelector('.conf__info-footer');
     if (!participantFrame) return;
-    if (document.fullscreenElement) {
-      document.exitFullscreen().then(() => {
+    if (screenfull.isFullscreen) {
+      screenfull.exit().then(() => {
         this.moveControlsFromFullScreen();
+        participantFrame.setAttribute('style', this.attribute);
       });
     } else {
-      participantFrame.requestFullscreen().then(() => {
+      this.attribute = participantFrame.getAttribute('style');
+      screenfull.request(participantFrame).then(() => {
+        participantFrame.removeAttribute('style');
         participantFrame.appendChild(confFooter);
         confFooter.classList.add('conf__info-footer--fullscreen');
       });
