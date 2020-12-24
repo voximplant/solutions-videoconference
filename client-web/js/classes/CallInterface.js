@@ -141,7 +141,10 @@ export default class CallInterface {
         // other links will truncated to 10 characters
         truncate: 40,
         // characters will be taken out of the middle
-        middleTruncation: true
+        middleTruncation: true,
+        attributes: {
+          target: "_blank"
+        },
       },
     });
   }

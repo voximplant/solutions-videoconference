@@ -20,8 +20,10 @@ class ChatManagerClass extends AbstractLogging{
 
   bindEvents(){
     this._messenger.on(VoxImplant.Messaging.MessengerEvents.SendMessage,(e)=>{
-      this.logging(' new message', e);
-      this.addMessageByEvent(e);
+      if(e.message.conversation === this.roomId){
+        this.logging(' new message', e);
+        this.addMessageByEvent(e);
+      }
     })
   }
 
@@ -119,9 +121,9 @@ class ChatManagerClass extends AbstractLogging{
 
 
   /**
-   * Sender will store here
-   * (https://voximplant.com/docs/references/websdk/voximplant/messaging/message#conversation) in the format
-   * {displayName:'DISPLAY_NAME', connectionId:'CONNECTION_ID'}  CONNECTION_ID will from 'X-UUID' at callConference
+   * От кого именно это сообщение - будем хранить вот тут
+   * (https://voximplant.com/docs/references/websdk/voximplant/messaging/message#conversation) в формате
+   * {displayName:'DISPLAY_NAME', connectionId:'CONNECTION_ID'}  CONNECTION_ID нужно брать тот же, что и отправляется в заголовке 'X-UUID' в callConference
    * @param text
    */
   sendMessage = (text) =>{

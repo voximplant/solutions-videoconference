@@ -1,5 +1,3 @@
-'use strict';
-
 let callInterface;
 function registerCallbacks(ci) {
   callInterface = ci;
@@ -25,7 +23,7 @@ function keyUpToggle(ev) {
   if (!pressedKey) return;
   if (actKeys.includes(ev.code)) pressedKey = null;
   if (ev.code === 'Space' || ev.code === 'KeyM') callInterface.muteToggle();
-  if (ev.code === 'KeyV') callInterface.cameraToggle();
+  if (ev.code === 'KeyV' && ev.ctrlKey===false) callInterface.cameraToggle();
 }
 
 export { registerCallbacks, unregisterCallback };
