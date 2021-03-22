@@ -1,0 +1,59 @@
+@use "../base_component";
+@use "../cross-icon";
+
+.error-panel {
+  max-width: 352px;
+  width: 100%;
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 24px;
+
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #eaedf3;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 5%);
+  min-height: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 100000;
+}
+
+.error-panel-topper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.error-icon-logo {
+  display: flex;
+  justify-content: center;
+  background: #221040;
+  height: 40px;
+  align-items: center;
+  width: 100%;
+}
+
+.error-panel-container {
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0 24px;
+}
+
+.error-panel-description {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-notify-text {
+  color: red;
+  text-align: center;
+}

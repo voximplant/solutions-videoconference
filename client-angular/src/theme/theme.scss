@@ -1,0 +1,98 @@
+/*
+ * Global application theme.
+ * Framework overrides and customization goes here.
+ */
+
+@font-face {
+  font-family: "Roboto";
+  src: url("../assets/fonts/Roboto-Regular.woff2") format("woff2"),
+    url("../assets/fonts/Roboto-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("../assets/fonts/RobotoMono-Regular.woff2") format("woff2"),
+    url("../assets/fonts/RobotoMono-Regular.woff") format("woff");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  outline: none;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  color: #ffffff;
+  background: url("../assets/fonts/RobotoMono-Regular.woff");
+}
+
+table {
+  border-collapse: collapse;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style-type: none;
+}
+
+form {
+  width: 100%;
+}
+
+img,
+svg {
+  max-height: 100%;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Button styles */
+
+.button {
+  text-transform: uppercase;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-family: Roboto Mono;
+  font-weight: 500;
+  line-height: 12px;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 4px;
+  background: #662eff;
+  padding: 0 24px;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: #5729d0;
+}
+
+.button:active {
+  background-color: #4824a2;
+}
+
+.button:focus {
+  background-color: #662eff;
+  border: 3px solid #0aacff;
+}
+
+.button:disabled {
+  /*background-color: #662EFF;*/
+  /*opacity: 0.3;*/
+  /*pointer-events: none;*/
+}

@@ -1,11 +1,11 @@
 'use strict';
 
-import {WSService} from './WSService.js';
+import { WSService } from './WSService.js';
 import CallManager from './CallManager.js';
-import {currentUser} from './User.js';
-import {LayerManager} from './LayerManager.js';
-import {showLeaveForm} from '../leaveForm.js';
-import {unregisterCallback} from './HotkeyManager.js';
+import { currentUser } from './User.js';
+import { LayerManager } from './LayerManager.js';
+import { showLeaveForm } from '../leaveForm.js';
+import { unregisterCallback } from './HotkeyManager.js';
 
 export default class CallInterface {
   constructor() {
@@ -20,11 +20,12 @@ export default class CallInterface {
     this.toggleButtonPeople = document.querySelector('.button_toggle_right');
     this.sidebarContainer = document.querySelector('.conf__sidebar-container');
 
-    this.messageSound = document.querySelector('.js__message_sound');
+    this.messageSound = document.querySelector('#js__message_sound');
     this.messageList = document.querySelector('.conf__sidebar-chat-message-list');
     this.messageInput = document.querySelector('.conf__sidebar-chat-message-input');
     this.messageSendButton = document.querySelector('.conf__sidebar-chat-message-sendButton');
 
+    this.confFooter = document.querySelector('.conf__info-footer');
     this.addEventListeners();
     this.sdk = window.VoxImplant.getInstance();
     VoxImplant.getInstance()
@@ -52,6 +53,8 @@ export default class CallInterface {
       this.leaveRoom();
     });
 
+    
+
     this.toggleButtonChat.addEventListener('click', () => {
       this.toggleButtonChat.classList.toggle('button_toggle_active');
       this.toggleButtonPeople.classList.toggle('button_toggle_active');
@@ -74,10 +77,11 @@ export default class CallInterface {
     })
 
     this.messageInput.addEventListener('keypress',ev=>{
-      if(ev.code==='Enter')
+      if(ev.code==='Enter') {
+        ev.preventDefault();
         this.addNewMessage();
+      }
     })
-
 
     document.querySelector('.js__close-sidebar').addEventListener('click', () => {
       this.sidebar.classList.toggle('sidebar--close');
@@ -92,7 +96,7 @@ export default class CallInterface {
     });
   }
 
-
+  
   addNewMessageCallback=()=>{};
 
   registerMessageHandlers(addNewMessageCallback, addChatMessage  ){
@@ -114,17 +118,18 @@ export default class CallInterface {
     if (currentUser.name === payload.displayName ){
       className = 'chat_message_mine'
     } else {
+      this.messageSound.volume = 0.5;
       this.messageSound.play()
     }
 
-    const template = document.importNode(document.getElementById('js_chat_message').content, true);
+    const template = document.importNode(document.getElementById('js_message').content, true);
     template.querySelector('.chat_message').id = message.uuid;
     template.querySelector('.chat_message').classList.add(className)
     template.querySelector('.message_name').textContent = payload.displayName;
     template.querySelector('.message_text').textContent = message.text;
     template.querySelector('.message_text').innerHTML = this.processAnchorMe(template.querySelector('.message_text').textContent);
 
-    const time = new Date(payload.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const time = new Date(payload.time).toLocaleTimeString('en-US', {'timeStyle':"short"});
     template.querySelector('.message_time').textContent = time;
     //template.querySelector('.message_info').textContent = JSON.stringify(message);
     return template;
@@ -300,36 +305,22 @@ export default class CallInterface {
     CallManager.disconnect();
     showLeaveForm();
   }
-  attribute={};
+
   toggleFullScreen(participantId) {
     const participantFrame = document.getElementById(participantId);
-    const confFooter = document.querySelector('.conf__info-footer');
     if (!participantFrame) return;
-    if (screenfull.isFullscreen) {
-      screenfull.exit().then(() => {
-        this.moveControlsFromFullScreen();
-        participantFrame.setAttribute('style', this.attribute);
-      });
+    if (document.fullscreenElement) {
+      document.exitFullscreen().then(() => {});
     } else {
-      this.attribute = participantFrame.getAttribute('style');
-      screenfull.request(participantFrame).then(() => {
-        participantFrame.removeAttribute('style');
-        participantFrame.appendChild(confFooter);
-        confFooter.classList.add('conf__info-footer--fullscreen');
-      });
+      participantFrame
+        .requestFullscreen()
+        .then(() => {})
+        .catch(() => {});
     }
   }
 
   checkFullScreen(participantId) {
     if (document.fullscreenElement && document.fullscreenElement.id === participantId)
-      document.exitFullscreen().then(() => {
-        this.moveControlsFromFullScreen();
-      });
-  }
-
-  moveControlsFromFullScreen() {
-    const confFooter = document.querySelector('.conf__info-footer');
-    document.querySelector('.conf__video-section-wrapper').appendChild(confFooter);
-    confFooter.classList.remove('conf__info-footer--fullscreen');
+      document.exitFullscreen().then(() => {});
   }
 }

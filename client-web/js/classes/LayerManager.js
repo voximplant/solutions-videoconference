@@ -42,6 +42,21 @@ class LayerManagerClass {
       fakeVideo.setAttribute('width', '400');
       fakeVideo.setAttribute('height', '300');
       userName.classList.add('userName');
+      if (id === 'localVideoNode') {
+        userName.textContent = currentUser.name[0].toUpperCase();
+      } else {
+        if (CallManager.endPointsSet[`${id}`]) {
+          userName.textContent = CallManager.endPointsSet[`${id}`].displayName[0].toUpperCase();
+        } else {
+          setTimeout(() => {
+            if(CallManager.endPointsSet[`${id}`]) {
+              userName.textContent = CallManager.endPointsSet[`${id}`].displayName[0].toUpperCase();
+            } else {
+              userName.textContent = 'Guest'
+            }
+          }, 1000);
+        }
+      }
       const firstLetter =
         id === 'localVideoNode'
           ? currentUser.name[0].toUpperCase()
@@ -61,7 +76,7 @@ class LayerManagerClass {
     const template = document.getElementById('js__endpoint-template');
     template.content.querySelector('.conf__video-name').textContent = `${name}`;
     template.content.querySelector('.js__endpoint').id = id;
-    template.content.querySelector('.js__endpoint').style.order = place;
+    template.content.querySelector('.js__endpoint').style.order = parseInt(place) + 2;
     return document.importNode(template.content, true);
   }
 }

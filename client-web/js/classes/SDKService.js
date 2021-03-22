@@ -8,8 +8,6 @@ const credentials = Env.credentials;
 const errorMessage = document.querySelector('.js__error-notify');
 
 class SDKServiceClass {
-  maxReconnectAmount=10;
-  reconnectAttempts=0;
   constructor() {
     this.isReconnecting = false;
     this.sdk = window.VoxImplant.getInstance();
@@ -27,27 +25,9 @@ class SDKServiceClass {
             // showDebugInfo: true,
             localVideoContainerId: 'localVideoNode',
             remoteVideoContainerId: 'hiddenRemote',
-            queueType: VoxImplant.QueueTypes.SmartQueue,
           })
           .then((_) => {
             console.warn('[WebSDk] Init completed');
-            // this.sdk.setLoggerCallback((record) => {
-            //   const { formattedText, category, label, level } = record;
-            //   switch (level) {
-            //     case 2:
-            //    // case LogLevel.WARNING:
-            //        console.warn(VoxImplant.LogCategory[category], label, formattedText);
-            //       break;
-            //     case 1:
-            //    // case LogLevel.ERROR:
-            //       console.error(VoxImplant.LogCategory[category], label, formattedText);
-            //       break;
-            //     default:
-            //       console.log(VoxImplant.LogCategory[category], label, formattedText);
-            //       break;
-            //   }
-            // });
-
             resolve(_);
           })
           .catch(reject);
@@ -104,7 +84,6 @@ class SDKServiceClass {
 
   reconnect() {
     if (!this.isReconnecting) {
-      this.reconnectAttempts++;
       while (errorMessage.firstChild) {
         errorMessage.removeChild(errorMessage.lastChild);
       }
@@ -117,16 +96,11 @@ class SDKServiceClass {
       this.isReconnecting = true;
       LayerManager.show('conf__error');
       CallManager.currentConf = null;
-
       this.sdk.showLocalVideo(false);
-      if(this.reconnectAttempts< this.maxReconnectAmount) {
-        if (VoxImplant.getInstance().getClientState() === 'LOGGED_IN') {
-          this.rejoinConf();
-        } else {
-          this.connectToVoxCloud(true);
-        }
+      if (VoxImplant.getInstance().getClientState() === 'LOGGED_IN') {
+        this.rejoinConf();
       } else {
-        console.warn('[WebSDk] Reconnect attempts done!');
+        this.connectToVoxCloud(true);
       }
     } else {
       console.warn('[WebSDk] We are waiting while another reconnect will be finished');

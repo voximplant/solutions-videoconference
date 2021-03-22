@@ -35,16 +35,18 @@ function getCameraSettings() {
           ...devices.filter((cam) => !~cam.name.indexOf(currentCameraLabel)),
         ];
         sortedDevices.forEach((device) => {
-          if (~device.name.indexOf(currentCameraLabel)) {
-            selectCameraButton.textContent = device.name;
+          if (typeof device === 'object') {
+            if (~device.name.indexOf(currentCameraLabel)) {
+              selectCameraButton.textContent = device.name;
+            }
+            const option = document.createElement('li');
+            option.onclick = () => {
+              changeCamera(device.id);
+            };
+            option.appendChild(document.createTextNode(`${device.name}`));
+            option.value = device.name + '';
+            select.appendChild(option);
           }
-          const option = document.createElement('li');
-          option.onclick = () => {
-            changeCamera(device.id);
-          };
-          option.appendChild(document.createTextNode(`${device.name}`));
-          option.value = device.name + '';
-          select.appendChild(option);
         });
       }
     });

@@ -1,0 +1,10 @@
+{
+  "APP_NAME": "voximplant-conf-angular",
+  "Home": "",
+  "Payment Required": "It seems there is not enough money on your account",
+  "Connection problem": "Connection problem, reconnecting you to the conference, please wait…",
+  "SDK error": " Some SDK error",
+  "This browser is not supported": "This browser is not supported",
+  "conference in another browser": "You have connected to the conference in another browser tab or window.",
+  "Wrong login or password": "Wrong login or password"
+}

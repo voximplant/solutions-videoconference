@@ -1,0 +1,58 @@
+<aside class="conf__sidebar js__sidebar">
+  <div class="conf__sidebar-header">
+    <div class="conf__sidebar-toggles">
+      <button
+        class="button button_toggle_left"
+        [class.button_toggle_active]="!isPeopleShow"
+        [class.button_toggle_inactive]="isPeopleShow"
+        (click)="isPeopleShow = false"
+        type="button"
+      >
+        <span>Chat</span>
+      </button>
+      <button
+        class="button button_toggle_right"
+        [class.button_toggle_active]="isPeopleShow"
+        [class.button_toggle_inactive]="!isPeopleShow"
+        (click)="isPeopleShow = true"
+        type="button"
+      >
+        <span>People</span>
+      </button>
+    </div>
+
+    <button class="conf__sidebar-icon conf__sidebar-icon--close js__close-sidebar" (click)="onClickClose()"></button>
+  </div>
+  <div class="conf__sidebar-container conf__sidebar-chat">
+    <div class="conf__sidebar-body-people" *ngIf="isPeopleShow">
+      <div class="conf__sidebar-sub_header">In the room</div>
+      <div class="conf__sidebar-body">
+        <app-participants-list [participants]="participants"></app-participants-list>
+      </div>
+    </div>
+
+    <div class="conf__sidebar-body-chat" *ngIf="!isPeopleShow">
+      <div class="conf__sidebar-body">
+        <app-chat [messages]="messages" [selfName]="selfName"></app-chat>
+        <div class="conf__sidebar-chat-message-input-container">
+          <input
+            class="conf__sidebar-chat-message-input"
+            #chatInput
+            (keyup.enter)="sendChatMessage(chatInput.value); chatInput.value = ''"
+          />
+          <button
+            class="conf__sidebar-chat-message-sendButton"
+            (click)="sendChatMessage(chatInput.value); chatInput.value = ''"
+          >
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M15.7068 0.293033C15.4338 0.0210332 15.0268 -0.0719668 14.6638 0.0590332L0.663812 5.05903C0.286812 5.19303 0.0258123 5.54003 0.00181231 5.93903C-0.0221877 6.33903 0.193812 6.71403 0.552812 6.89403L5.13881 9.18603L10.9998 5.00003L6.81281 10.862L9.10481 15.448C9.27581 15.787 9.62281 16 9.99981 16C10.0208 16 10.0408 15.999 10.0608 15.998C10.4608 15.974 10.8078 15.714 10.9428 15.336L15.9428 1.33603C16.0718 0.973033 15.9798 0.566033 15.7068 0.293033Z"
+                fill="#662EFF"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
