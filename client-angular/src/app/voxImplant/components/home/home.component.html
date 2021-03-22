@@ -1,0 +1,34 @@
+<div class="conf__container">
+  <app-welcome *ngIf="uiService.state === states.needRoomId"></app-welcome>
+  <app-info-form *ngIf="uiService.state === states.needInfo"></app-info-form>
+  <app-camera-allow-access *ngIf="uiService.state === states.needAccessAllow"></app-camera-allow-access>
+  <app-browser-is-not-supported *ngIf="uiService.state === states.browserIsSupported"></app-browser-is-not-supported>
+  <app-media-setting-form
+    *ngIf="uiService.state === states.needMediaSetting || uiService.isSettingsShown"
+    [showAsPopup]="uiService.isSettingsShown"
+  ></app-media-setting-form>
+  <app-media-allow-notify *ngIf="uiService.state === states.mediaAccessError"></app-media-allow-notify>
+
+  <app-video-wall
+    *ngIf="uiService.state === states.videoWall"
+    (sidePanelEmitter)="onSidePanelOpen($event)"
+  ></app-video-wall>
+  <app-leave-room *ngIf="uiService.state === states.leaveRoom"></app-leave-room>
+</div>
+<app-side-panel
+  *ngIf="uiService.state === states.videoWall && isSidePanelOpen"
+  (closePanelEmitter)="onClose($event)"
+  [participants]="uiService.participants"
+  (chatMessage)="uiService.onNewChatMessage($event)"
+  [messages]="uiService.chatMessages"
+  [selfName]="uiService.selfName"
+></app-side-panel>
+<!--<div class="testButton">-->
+<!--<button (click)="sendError(errors.SDKError)" >SDKError</button>-->
+<!--<button (click)="sendError(errors.ConnectionProblem)" >ConnectionProblem</button>-->
+<!--<button (click)="sendError(errors.XMultipleLogin)" >XMultipleLogin</button>-->
+<!--<button (click)="sendError(errors.BrowserIsNotSupported)" >BrowserIsNotSupported</button>-->
+<!--<button (click)="sendError(errors.OutOfMoney)" >OutOfMoney</button>-->
+<!--</div>-->
+<app-error-notify></app-error-notify>
+<app-enviroment></app-enviroment>

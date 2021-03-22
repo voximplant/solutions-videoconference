@@ -31,9 +31,8 @@ function refreshCamera() {
 
 function generateConstraints() {
   const videoSettings = {
-    frameWidth: 640,
-    frameHeight: 360,
-    frameRate: 25,
+    frameWidth: 1920,
+    frameHeight: 1080
   };
   if (cameraId) {
     videoSettings.cameraId = cameraId;
@@ -198,7 +197,8 @@ const VIManager = {
   detectAudioWorklet: () => {
     if (window['OfflineAudioContext']) {
       let context = new window['OfflineAudioContext'](1, 1, 44100);
-      return context.audioWorklet && typeof context.audioWorklet.addModule === 'function';
+      const result = context.audioWorklet && typeof context.audioWorklet.addModule === 'function';
+      return result;
     }
     return false;
   },

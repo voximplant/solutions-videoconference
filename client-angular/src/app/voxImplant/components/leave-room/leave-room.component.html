@@ -1,0 +1,83 @@
+<div class="conf__leave">
+  <div class="conf__leave-info" *ngIf="isFormSent">
+    <h2>VIDEO COLLABORATION YOU CONTROL</h2>
+    <p>
+      Thank you for trying Voximplant’s video conferencing demo. Sign-up below for a free consultation on how Voximplant
+      can help you gain control over your video conferencing and remote meeting needs.
+    </p>
+  </div>
+  <div class="conf__leave-form">
+    <form class="js__leave-form" [formGroup]="leaveForm" (ngSubmit)="onSubmit()">
+      <div
+        class="conf__form-row"
+        [ngClass]="{
+          invalid: leaveForm.controls['phone_number'].invalid && leaveForm.controls['phone_number'].touched
+        }"
+      >
+        <label for="phone_number">Phone number</label>
+        <input name="phone_number" type="text" id="phone_number" formControlName="phone_number" required />
+      </div>
+      <div
+        class="conf__form-row"
+        [ngClass]="{ invalid: leaveForm.controls['full_name'].invalid && leaveForm.controls['full_name'].touched }"
+      >
+        <label for="full_name">Full name</label>
+        <input name="full_name" type="text" id="full_name" formControlName="full_name" required />
+      </div>
+      <div
+        class="conf__form-row"
+        [ngClass]="{
+          invalid: leaveForm.controls['company_name'].invalid && leaveForm.controls['company_name'].touched
+        }"
+      >
+        <label for="company_name">Company name</label>
+        <input name="company_name" type="text" id="company_name" formControlName="company_name" required />
+      </div>
+      <div
+        class="conf__form-row"
+        [ngClass]="{ invalid: leaveForm.controls['job_title'].invalid && leaveForm.controls['job_title'].touched }"
+      >
+        <label for="job_title">Job title</label>
+        <input name="job_title" type="text" id="job_title" formControlName="job_title" required />
+      </div>
+      <div
+        class="conf__form-row"
+        [ngClass]="{ invalid: leaveForm.controls['work_email'].invalid && leaveForm.controls['work_email'].touched }"
+      >
+        <label for="work_email">Work email</label>
+        <input name="email" type="text" id="work_email" formControlName="work_email" required />
+      </div>
+      <div
+        class="conf__form-row"
+        [ngClass]="{ invalid: leaveForm.controls['country'].invalid && leaveForm.controls['country'].touched }"
+      >
+        <label for="country">Country</label>
+        <input name="country" type="text" id="country" formControlName="country" required />
+      </div>
+      <div class="conf__welcome-btn conf__form-submit">
+        <button
+          class="button js__submit-leave-form"
+          type="submit"
+          #submitButton
+          [class.disabled]="leaveForm.invalid"
+          [disabled]="leaveForm.invalid"
+        >
+          <span>SEND</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+      <p class="privacy-policy">
+        By clicking the button, you agree to receive updates of Voximplant products. We use your information according
+        to our
+        <a href="https://voximplant.com/legal/privacy">privacy policy</a>.
+      </p>
+    </form>
+  </div>
+  <div class="conf__leave-tnh" *ngIf="isFormSent">
+    <h2>Thanks, you’re all set.</h2>
+    <p>
+      Thank you for your interest. Our customer success team will respond soon. Please check out our video conferencing
+      solution page in the mean time.
+    </p>
+  </div>
+</div>

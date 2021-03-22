@@ -1,0 +1,20 @@
+<ul class="conf__sidebar-chat-message-list">
+  <li *ngFor="let message of messages">
+    <div
+      class="chat_message"
+      [ngClass]="{
+        chat_message_mine: message.payload.displayName === selfName,
+        chat_message_other: message.payload.displayName !== selfName
+      }"
+    >
+      <div class="chat_message_container">
+        <div class="chat_message_info">
+          <div class="message_name">{{ message.payload.displayName }}</div>
+          <div class="message_time">{{ getFormattedTime(message) }}</div>
+        </div>
+        <div class="message_text">{{ processAnchorMe(message.text) }}</div>
+        <div class="message_info"></div>
+      </div>
+    </div>
+  </li>
+</ul>

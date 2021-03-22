@@ -7,6 +7,7 @@ import { currentUser } from './User.js';
 import { LayerManager } from './LayerManager.js';
 import { SDKService } from './SDKService.js';
 import { registerCallbacks } from './HotkeyManager.js';
+import { ChatManager } from "./ChatManager.js";
 
 const container = document.getElementById('js__workbench');
 const inviteForm = document.querySelector('.js__invite-form');
@@ -18,6 +19,7 @@ export default class CallManager {
     CallManager.endPointsSet = {};
     settingsApplyButton.disabled = true;
     settingsApplyButton.classList.add('loading');
+    console.log('Call settings', newCallParams);
     CallManager.currentConf = window.VoxImplant.getInstance().callConference(newCallParams);
     CallManager.reporter = callReporter(
       CallManager.currentConf,
@@ -33,6 +35,7 @@ export default class CallManager {
     this.soundRemoved = document.getElementById('js__ep_removed_sound');
     this.soundRemoved.volume = 0.5;
     registerCallbacks(this.callInterface);
+    this.updateChatManager(currentUser);
   }
 
   static disconnect() {
@@ -55,20 +58,52 @@ export default class CallManager {
     CallManager.currentConf.on(window.VoxImplant.CallEvents.EndpointAdded, (e) =>
       this.onEndpointAdded(e)
     );
+    CallManager.currentConf.on(window.VoxImplant.CallEvents.MessageReceived, (e) =>
+      this.onMessageReceived(e)
+    );
+  }
+
+  onMessageReceived(e) {
+    console.log(`[WebSDk] message received:`, e);
+    let payload = JSON.parse(e.text);
+    const messenger = window.VoxImplant.getMessenger();
+    if(payload.owner){
+      console.log('payload for owner', payload);
+      if(!payload.roomId) {
+        ChatManager.create();
+      } else {
+        ChatManager.join(payload.roomId);
+      }
+    }else {
+      console.log('payload for non-owner', payload);
+      if(payload.roomId) {
+        ChatManager.join(payload.roomId);
+      }
+    }
+
+  }
+  updateChatManager(currentUser) {
+    ChatManager.setConnectionId(currentUser.uuid);
+    ChatManager.setDisplayName(currentUser.name);
+    this.callInterface.registerMessageHandlers(ChatManager.sendMessage, ChatManager.addChatMessage);
+    ChatManager.addChatMessage = this.callInterface.addChatMessage;
   }
 
   onCallConnected(e) {
-    /** Bug fix for FireFox */
-    CallManager.endPointsSet[`${currentUser.uuid}`] = {
-      displayName: currentUser.name,
-      id: currentUser.uuid,
-      isDefault: true,
-    };
+    let localVideo = document.getElementById('localVideoNode');
+    let nameLocalLabel = localVideo.querySelector('.conf__video-wrap .conf__video-name');
+    nameLocalLabel.innerHTML = `${currentUser.name} (you)`;
+
+    if (currentUser.cameraStatus !== 1) {
+      this.callInterface.cameraToggle('', 'hide');
+    }
+
+    if (!currentUser.microphoneEnabled) {
+      this.callInterface.muteToggle('', 'mute');
+    }
 
     inviteForm.classList.remove('hidden', 'popup-view');
 
-    let localVideo = document.getElementById('localVideoNode');
-    let nameLocalLabel = localVideo.querySelector('.conf__video-wrap .conf__video-name');
     nameLocalLabel.innerHTML = `${currentUser.name} (you)`;
 
     if (currentUser.cameraStatus !== 1) {
@@ -87,6 +122,10 @@ export default class CallManager {
       false,
       currentUser.cameraStatus === 1 ? true : false
     );
+    if (Sentry) {
+      Sentry.setContext('session-id', { id: e.headers['X-Conf-Sess'] });
+      Sentry.setUser({ username: currentUser.name, id: e.headers['X-Conf-Call'] });
+    }
     if (CallManager.currentConf.settings.video.sendVideo) {
       window.VoxImplant.getInstance().showLocalVideo(true);
     }
@@ -95,6 +134,11 @@ export default class CallManager {
     settingsApplyButton.classList.remove('loading');
     calculateVideoGrid();
     LayerManager.show('conf__video-section-wrapper');
+    if (CallManager.currentConf.getEndpoints().length < 2) {
+      inviteForm.classList.remove('hidden', 'popup-view');
+    } else {
+      inviteForm.classList.add('hidden', 'popup-view');
+    }
   }
 
   onCallDisconnected(e) {
@@ -141,6 +185,8 @@ export default class CallManager {
           sidebar.appendChild(node);
         }
       });
+      const count = document.querySelector('.conf__sidebar-sub_header');
+      count.innerHTML = 'In the room (' + CallManager.currentConf.getEndpoints().length + ')';
     }
   }
 
@@ -150,6 +196,7 @@ export default class CallManager {
 
   onEndpointAdded(e) {
     if (!CallManager.endPointsSet[`${e.endpoint.id}`]) {
+      CallManager.endPointsSet[`${e.endpoint.id}`] = e.endpoint;
       e.endpoint.on(window.VoxImplant.EndpointEvents.Removed, (e) => this.onEndpointRemoved(e));
       e.endpoint.on(window.VoxImplant.EndpointEvents.RemoteMediaAdded, (e) =>
         this.onRemoteMediaAdded(e)
@@ -158,6 +205,12 @@ export default class CallManager {
         this.onRemoteMediaRemoved(e)
       );
 
+      if (!e.call.getEndpoints().filter(en => !en.isDefault).length) {
+        inviteForm.classList.remove('hidden', 'popup-view');
+      } else {
+        inviteForm.classList.add('hidden', 'popup-view');
+      }
+
       // all actions with endpoint only inside this
       console.warn(
         `[WebSDk] New endpoint ID: ${e.endpoint.id} (${
@@ -165,33 +218,21 @@ export default class CallManager {
         })`
       );
       if (e.endpoint.isDefault) {
-        CallManager.endPointsSet = {};
-      }
-      CallManager.endPointsSet[`${e.endpoint.id}`] = e.endpoint;
-
-      if (e.endpoint.isDefault) {
-        let localVideo = document.getElementById('localVideoNode');
-        let nameLocalLabel = localVideo.querySelector('.conf__video-wrap .conf__video-name');
-        nameLocalLabel.innerHTML = `${currentUser.name} (you)`;
-
-        if (currentUser.cameraStatus !== 1) {
-          this.callInterface.cameraToggle('', 'hide');
-        }
-
-        if (!currentUser.microphoneEnabled) {
-          this.callInterface.muteToggle('', 'mute');
-        }
+        return;
       } else {
-        const node = LayerManager.renderTemplate(
-          e.endpoint.id,
-          e.endpoint.displayName,
-          1 + e.endpoint.place
-        );
-
-        container.appendChild(node);
+        const existEp = document.getElementById(e.endpoint.id);
+        const node =
+          existEp ||
+          LayerManager.renderTemplate(e.endpoint.id, e.endpoint.displayName, e.endpoint.place);
+        if (!existEp) {
+          container.appendChild(node);
+        } else {
+          existEp.querySelector('.conf__video-name').textContent = `${e.endpoint.displayName}`;
+          existEp.style.order = parseInt(e.endpoint.place) + 2;
+        }
         this.soundAdded.play();
-        console.warn(e.endpoint);
-        console.error(e.endpoint.place);
+        console.log(e.endpoint);
+        //console.error(e.endpoint.place);
         // document.getElementById(e.endpoint.id).style.order = e.endpoint.place;
         const fullscreen = document
           .getElementById(e.endpoint.id)
@@ -209,44 +250,34 @@ export default class CallManager {
           this.onRemoteMediaAdded({ endpoint: e.endpoint, mediaRenderer: mr });
         });
       }
-
-      if (Object.keys(CallManager.endPointsSet).length < 2) {
-        inviteForm.classList.remove('hidden', 'popup-view');
-      } else {
-        inviteForm.classList.add('hidden', 'popup-view');
-      }
-
       this.calculateParticipants();
       setVideoSectionWidth();
     }
   }
 
   onRemoteMediaAdded(e) {
+    if (e.endpoint.isDefault) return;
     console.warn(`[WebSDk] New MediaRenderer in ${e.endpoint.id}`, e);
-    if (CallManager.endPointsSet[`${e.endpoint.id}`] && !e.endpoint.isDefault) {
-      const endpointNode = document.getElementById(e.endpoint.id);
 
-      if (
-        e.mediaRenderer.kind === 'video' &&
-        document.getElementById(`videoStub-${e.endpoint.id}`)
-      ) {
-        LayerManager.toggleVideoStub(e.endpoint.id, false);
-      }
+    const endpointNode = document.getElementById(e.endpoint.id);
 
-      if (e.mediaRenderer.kind === 'sharing') {
-        LayerManager.toggleVideoStub(e.endpoint.id, false);
-      }
+    if (e.mediaRenderer.kind === 'video' && document.getElementById(`videoStub-${e.endpoint.id}`)) {
+      LayerManager.toggleVideoStub(e.endpoint.id, false);
+    }
 
-      e.mediaRenderer.render(endpointNode);
-      e.mediaRenderer.placed = true;
+    if (e.mediaRenderer.kind === 'sharing') {
+      LayerManager.toggleVideoStub(e.endpoint.id, false);
+    }
 
-      if (
-        !e.endpoint.mediaRenderers.find(
-          (renderer) => renderer.kind === 'video' || renderer.kind === 'sharing'
-        )
-      ) {
-        LayerManager.toggleVideoStub(e.endpoint.id, true);
-      }
+    e.mediaRenderer.render(endpointNode);
+    e.mediaRenderer.placed = true;
+
+    if (
+      !e.endpoint.mediaRenderers.find(
+        (renderer) => renderer.kind === 'video' || renderer.kind === 'sharing'
+      )
+    ) {
+      LayerManager.toggleVideoStub(e.endpoint.id, true);
     }
   }
 
@@ -264,6 +295,7 @@ export default class CallManager {
   }
 
   onEndpointRemoved(e) {
+    if (e.endpoint.isDefault) return;
     this.soundRemoved.play();
     this.callInterface.checkFullScreen(e.endpoint.id);
     console.warn(`[WebSDk] Endpoint was removed ID: ${e.endpoint.id}`);

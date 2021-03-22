@@ -1,4 +1,4 @@
-const CONNECTION_STRING = '';
+const CONNECTION_STRING = 'wss://irbisadm.dev/videoconf';
 
 class WSServiceClass {
   constructor(connectionString) {
@@ -84,7 +84,8 @@ class WSServiceClass {
   }
 
   _sendRawMessage(message) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+    if (!this.ws) return;
+    if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     }
   }

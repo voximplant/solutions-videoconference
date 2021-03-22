@@ -1,0 +1,65 @@
+<!-- state 1 - welcome (TRY DEMO) -->
+<div class="conf__welcome">
+  <div class="conf__welcome-icon">
+    <svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="96" height="96" rx="16" fill="#351877" />
+      <rect x="0.5" y="0.5" width="95" height="95" rx="15.5" stroke="#4824A2" stroke-opacity="0.37" />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M69.3973 49.0349C70.2009 48.575 70.2009 47.425 69.3973 46.9651L27.8082 23.1619C27.0046 22.7019 26 23.2769 26 24.1968V71.8032C26 72.7231 27.0046 73.2981 27.8082 72.8381L69.3973 49.0349Z"
+        fill="url(#paint0_linear)"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M53.3545 33.228C53.0462 33.0473 53.0462 32.5956 53.3545 32.4149L69.3064 23.0636C69.6147 22.8829 70 23.1088 70 23.4702V42.1727C70 42.5341 69.6147 42.76 69.3064 42.5793L53.3545 33.228Z"
+        fill="url(#paint1_linear)"
+      />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M53.3545 63.5852C53.0462 63.4045 53.0462 62.9527 53.3545 62.772L69.3064 53.4207C69.6147 53.24 70 53.4659 70 53.8273V72.5298C70 72.8912 69.6147 73.1171 69.3064 72.9364L53.3545 63.5852Z"
+        fill="url(#paint2_linear)"
+      />
+      <defs>
+        <linearGradient id="paint0_linear" x1="70" y1="73" x2="26.3815" y2="24.1593" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#662EFF" />
+          <stop offset="1" stop-color="#BD00FF" />
+        </linearGradient>
+        <linearGradient id="paint1_linear" x1="70" y1="73" x2="26.3815" y2="24.1593" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#662EFF" />
+          <stop offset="1" stop-color="#BD00FF" />
+        </linearGradient>
+        <linearGradient id="paint2_linear" x1="70" y1="73" x2="26.3815" y2="24.1593" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#662EFF" />
+          <stop offset="1" stop-color="#BD00FF" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="conf__welcome-title">
+    <span>Videoconf</span>
+  </div>
+
+  <div class="conf__welcome-subtitle">
+    <span
+      >Build, customize, and control video collaboration with Voximplant’s cloud video conferencing API and SDK for web
+      and mobile.</span
+    >
+  </div>
+
+  <div class="conf__welcome-btn">
+    <button class="button js__start-btn" (click)="uiService.onWelcome($event)">
+      <span>try the demo</span>
+      <div class="spinner"></div>
+    </button>
+  </div>
+
+  <footer class="footer">
+    <div class="footer__info">
+      <span>Developed by Voximplant</span>
+    </div>
+  </footer>
+</div>

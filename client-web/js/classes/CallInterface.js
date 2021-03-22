@@ -16,6 +16,16 @@ export default class CallInterface {
     this.chat = document.querySelector('.js__chat');
     this.leave = document.querySelector('.js__leave');
     this.sidebar = document.querySelector('.js__sidebar');
+    this.toggleButtonChat = document.querySelector('.button_toggle_left');
+    this.toggleButtonPeople = document.querySelector('.button_toggle_right');
+    this.sidebarContainer = document.querySelector('.conf__sidebar-container');
+
+    this.messageSound = document.querySelector('#js__message_sound');
+    this.messageList = document.querySelector('.conf__sidebar-chat-message-list');
+    this.messageInput = document.querySelector('.conf__sidebar-chat-message-input');
+    this.messageSendButton = document.querySelector('.conf__sidebar-chat-message-sendButton');
+
+    this.confFooter = document.querySelector('.conf__info-footer');
     this.addEventListeners();
     this.sdk = window.VoxImplant.getInstance();
     VoxImplant.getInstance()
@@ -43,6 +53,36 @@ export default class CallInterface {
       this.leaveRoom();
     });
 
+    
+
+    this.toggleButtonChat.addEventListener('click', () => {
+      this.toggleButtonChat.classList.toggle('button_toggle_active');
+      this.toggleButtonPeople.classList.toggle('button_toggle_active');
+      this.toggleButtonChat.classList.toggle('button_toggle_inactive');
+      this.toggleButtonPeople.classList.toggle('button_toggle_inactive');
+      this.sidebarContainer.classList.toggle('conf__sidebar-chat');
+      this.sidebarContainer.classList.toggle('conf__sidebar-people');
+    });
+    this.toggleButtonPeople.addEventListener('click', () => {
+      this.toggleButtonChat.classList.toggle('button_toggle_active');
+      this.toggleButtonPeople.classList.toggle('button_toggle_active');
+      this.toggleButtonChat.classList.toggle('button_toggle_inactive');
+      this.toggleButtonPeople.classList.toggle('button_toggle_inactive');
+      this.sidebarContainer.classList.toggle('conf__sidebar-chat');
+      this.sidebarContainer.classList.toggle('conf__sidebar-people');
+    });
+
+    this.messageSendButton.addEventListener('click', () => {
+      this.addNewMessage();
+    })
+
+    this.messageInput.addEventListener('keypress',ev=>{
+      if(ev.code==='Enter') {
+        ev.preventDefault();
+        this.addNewMessage();
+      }
+    })
+
     document.querySelector('.js__close-sidebar').addEventListener('click', () => {
       this.sidebar.classList.toggle('sidebar--close');
       this.chat.classList.toggle('option--off');
@@ -54,6 +94,71 @@ export default class CallInterface {
     WSService.addEventListener('vad', (e) => {
       this.displayVad(e);
     });
+  }
+
+  
+  addNewMessageCallback=()=>{};
+
+  registerMessageHandlers(addNewMessageCallback, addChatMessage  ){
+    this.addNewMessageCallback = addNewMessageCallback;
+   // addChatMessage = this.addChatMessage;
+  }
+
+  addNewMessage(){
+    if (this.messageInput.value) {
+      const text = ""+this.messageInput.value;
+      this.addNewMessageCallback(text);
+      this.messageInput.value = "";
+    }
+  }
+
+  renderChatTemplate(message) {
+    let className = 'chat_message_other';
+    const payload = message.payload[0];
+    if (currentUser.name === payload.displayName ){
+      className = 'chat_message_mine'
+    } else {
+      this.messageSound.volume = 0.5;
+      this.messageSound.play()
+    }
+
+    const template = document.importNode(document.getElementById('js_message').content, true);
+    template.querySelector('.chat_message').id = message.uuid;
+    template.querySelector('.chat_message').classList.add(className)
+    template.querySelector('.message_name').textContent = payload.displayName;
+    template.querySelector('.message_text').textContent = message.text;
+    template.querySelector('.message_text').innerHTML = this.processAnchorMe(template.querySelector('.message_text').textContent);
+
+    const time = new Date(payload.time).toLocaleTimeString('en-US', {'timeStyle':"short"});
+    template.querySelector('.message_time').textContent = time;
+    //template.querySelector('.message_info').textContent = JSON.stringify(message);
+    return template;
+  }
+  //detect links / URLs / Emails in text and convert them to clickable HTML anchor links.
+  processAnchorMe(input) {
+    return anchorme({
+      input,
+      // use some options
+      options: {
+        // any link that has with "google.com/search?"
+        // will be truncated to 40 characters,
+        // github links will not be truncated
+        // other links will truncated to 10 characters
+        truncate: 40,
+        // characters will be taken out of the middle
+        middleTruncation: true,
+        attributes: {
+          target: "_blank"
+        },
+      },
+    });
+  }
+
+  //TODO update message
+  addChatMessage=(message)=>{
+    let li = document.createElement('li');
+    li.appendChild(this.renderChatTemplate(message));
+    this.messageList.appendChild(li);
   }
 
   toggleStatus(e) {
@@ -203,30 +308,19 @@ export default class CallInterface {
 
   toggleFullScreen(participantId) {
     const participantFrame = document.getElementById(participantId);
-    const confFooter = document.querySelector('.conf__info-footer');
     if (!participantFrame) return;
     if (document.fullscreenElement) {
-      document.exitFullscreen().then(() => {
-        this.moveControlsFromFullScreen();
-      });
+      document.exitFullscreen().then(() => {});
     } else {
-      participantFrame.requestFullscreen().then(() => {
-        participantFrame.appendChild(confFooter);
-        confFooter.classList.add('conf__info-footer--fullscreen');
-      });
+      participantFrame
+        .requestFullscreen()
+        .then(() => {})
+        .catch(() => {});
     }
   }
 
   checkFullScreen(participantId) {
     if (document.fullscreenElement && document.fullscreenElement.id === participantId)
-      document.exitFullscreen().then(() => {
-        this.moveControlsFromFullScreen();
-      });
-  }
-
-  moveControlsFromFullScreen() {
-    const confFooter = document.querySelector('.conf__info-footer');
-    document.querySelector('.conf__video-section-wrapper').appendChild(confFooter);
-    confFooter.classList.remove('conf__info-footer--fullscreen');
+      document.exitFullscreen().then(() => {});
   }
 }

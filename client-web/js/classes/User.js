@@ -30,6 +30,7 @@ class UserClass {
     const config = {
       number: `conf_${this.serviceId}`,
       video: { sendVideo: this.cameraStatus === 1 ? true : false, receiveVideo: true },
+      // simulcast: true,
       extraHeaders: {
         'X-Display-Name': this.name,
         'X-Email': this.email,
@@ -62,6 +63,12 @@ class UserClass {
 
   getLocalStorage() {
     return localStorage.getItem('user_data') ? JSON.parse(localStorage.user_data) : null;
+  }
+
+  updateSentry() {
+    if (Sentry) {
+      Sentry.setContext('service-id', { id: this.serviceId });
+    }
   }
 }
 

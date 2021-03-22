@@ -25,7 +25,6 @@ class SDKServiceClass {
             // showDebugInfo: true,
             localVideoContainerId: 'localVideoNode',
             remoteVideoContainerId: 'hiddenRemote',
-            queueType: VoxImplant.QueueTypes.SmartQueue,
           })
           .then((_) => {
             console.warn('[WebSDk] Init completed');

@@ -654,7 +654,7 @@
               <div class="conf__info-footer-icon conf__info-footer-icon-share js__share"></div>
             </div>
             <div class="conf__info-footer-icon-wrap conf__info-footer--nofs">
-              <div class="conf__info-footer-icon conf__info-footer-icon-users js__chat"></div>
+              <div class="conf__info-footer-icon conf__info-footer-icon-chat js__chat"></div>
             </div>
             <div class="conf__info-footer-icon-wrap conf__info-footer--nofs">
               <div class="conf__info-footer-icon conf__info-footer-icon-leave js__leave"></div>
@@ -771,12 +771,37 @@
 
       <aside class="conf__sidebar sidebar--close js__sidebar">
         <div class="conf__sidebar-header">
-          <p class="conf__sidebar-title">Users</p>
+          <div class="conf__sidebar-toggles">
+            <button class="button button_toggle_left button_toggle_active" type="button">
+              <span>Chat</span>
+            </button>
+            <button class="button button_toggle_right button_toggle_inactive" type="button">
+              <span>People</span>
+            </button>
+          </div>
+
           <button class="conf__sidebar-icon conf__sidebar-icon--close js__close-sidebar"></button>
         </div>
-        <div class="conf__sidebar-sub_header">In the room</div>
-        <div class="conf__sidebar-body">
-          <ul class="conf__sidebar-participants-list"></ul>
+        <div class="conf__sidebar-container conf__sidebar-chat">
+
+          <div class="conf__sidebar-body-people">
+            <div class="conf__sidebar-sub_header">In the room</div>
+            <div class="conf__sidebar-body">
+              <ul class="conf__sidebar-participants-list"></ul>
+            </div>
+          </div>
+
+          <div class="conf__sidebar-body-chat">
+            <div class="conf__sidebar-body ">
+              <ul class="conf__sidebar-chat-message-list"></ul>
+              <div class="conf__sidebar-chat-message-input-container">
+                <input class="conf__sidebar-chat-message-input" value=""/><button class="conf__sidebar-chat-message-sendButton" ><svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.7068 0.293033C15.4338 0.0210332 15.0268 -0.0719668 14.6638 0.0590332L0.663812 5.05903C0.286812 5.19303 0.0258123 5.54003 0.00181231 5.93903C-0.0221877 6.33903 0.193812 6.71403 0.552812 6.89403L5.13881 9.18603L10.9998 5.00003L6.81281 10.862L9.10481 15.448C9.27581 15.787 9.62281 16 9.99981 16C10.0208 16 10.0408 15.999 10.0608 15.998C10.4608 15.974 10.8078 15.714 10.9428 15.336L15.9428 1.33603C16.0718 0.973033 15.9798 0.566033 15.7068 0.293033Z" fill="#662EFF"></path>
+              </svg></button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </aside>
     </div>
@@ -899,6 +924,20 @@
       </li>
     </template>
     <div id="hiddenRemote" style="display: none !important;"></div>
+
+    <template id="js_chat_message">
+      <div class="chat_message">
+        <div class="chat_message_container">
+          <div class="chat_message_info">
+            <div class="message_name"></div><div class="message_time"></div>
+          </div>
+          <div class="message_text"></div>
+          <div class="message_info"></div>
+        </div>
+      </div>
+    </template>
+
+
     <script src="vendor/voximplant.min.js"></script>
     <script src="js/customSelect.js"></script>
     <script type="module" src="js/settingsForm.js"></script>
@@ -908,12 +947,16 @@
     <script type="module" src="js/settingsMeeting.js"></script>
     <audio src="audio/ep_added.mp3" id="js__ep_added_sound"></audio>
     <audio src="audio/ep_remove.mp3" id="js__ep_removed_sound"></audio>
+    <audio src="audio/512135__beezlefm__pop-up-sound.wav" id="js__message_sound"></audio>
     <script src="https://vc-stats.voximplant.com/lib/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js"></script>
     <script
       src="https://browser.sentry-cdn.com/5.15.5/bundle.min.js"
       integrity="sha384-wF7Jc4ZlWVxe/L8Ji3hOIBeTgo/HwFuaeEfjGmS3EXAG7Y+7Kjjr91gJpJtr+PAT"
       crossorigin="anonymous"
     ></script>
+    <!-- get links from text-->
+    <script src="https://raw.githack.com/alexcorvi/anchorme.js/gh-pages/dist/browser/anchorme.min.js"></script>
     <!-- Google Tag Manager -->
     <script>
       (function (w, d, s, l, i) {
@@ -929,6 +972,9 @@
         j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
       })(window, document, 'script', 'dataLayer', 'GTM-PDKBNPV');
+    </script>
+    <script>
+
     </script>
     <!-- End Google Tag Manager -->
   </body>

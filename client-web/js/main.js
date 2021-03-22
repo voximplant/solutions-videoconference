@@ -68,6 +68,7 @@ callForm.addEventListener('submit', (e) => {
   user.email = formData.get('userEmail');
   window.initReporter('Videoconf', '', '');
   user.setLocalStorage();
+  user.updateSentry();
 
   console.warn('New User:', user);
 

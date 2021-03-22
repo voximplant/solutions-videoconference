@@ -121,6 +121,33 @@ button {
   overflow: hidden;
 }
 
+button.button_toggle_left {
+  border-radius: 4px 0px 0px 4px;
+}
+button.button_toggle_right {
+  border-radius:  0px 4px 4px 0px;
+}
+button.button_toggle_active {
+  background: #662eff;
+  border:solid 1px #662eff;
+}
+button.button_toggle_active:focus{
+  color: #fff;
+  border: none;
+}
+button.button_toggle_inactive {
+  background: #ffffff;
+  border:solid 1px #662eff;
+  color: #662eff;
+}
+button.button_toggle_inactive:hover{
+  color: #fff;
+}
+button.button_toggle_inactive:focus{
+  color: #fff;
+  border: none;
+}
+
 @keyframes rot {
   0% {
     transform: rotate(0deg);
@@ -897,7 +924,7 @@ button {
 }
 
 .conf__info-footer {
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;

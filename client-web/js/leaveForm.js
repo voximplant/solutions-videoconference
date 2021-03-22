@@ -2,6 +2,7 @@
 
 import { LayerManager } from './classes/LayerManager.js';
 import { currentUser } from './classes/User.js';
+import Env from './classes/Env.js';
 
 const leaveForm = document.querySelector('.js__leave-form');
 const submitButton = document.querySelector('.js__submit-leave-form');
@@ -23,7 +24,7 @@ leaveForm.addEventListener('submit', (e) => {
     submitButton.classList.add('loading');
 
     axios
-      .post('', formData, {
+      .post(Env.feedbackURL, formData, {
         headers: { 'content-type': 'multipart/form-data' },
       })
       .then((resp) => {

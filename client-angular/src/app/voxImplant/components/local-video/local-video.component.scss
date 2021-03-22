@@ -1,0 +1,14 @@
+@use "../video_base_component";
+.js__local-endpoint {
+  min-width: 400px;
+  min-height: 300px;
+  background: black;
+}
+
+#localVideoNode video {
+  transform: rotateY(180deg);
+  position: absolute;
+}
+#localVideoNode.is--sharing video {
+  transform: none;
+}
