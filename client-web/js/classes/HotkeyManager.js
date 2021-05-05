@@ -10,20 +10,19 @@ function unregisterCallback() {
   window.removeEventListener('keyup', keyUpToggle);
 }
 
-const actKeys = ['KeyM', 'KeyV', 'Space'];
+const actKeys = ['KeyD', 'KeyE'];
 
 let pressedKey = '';
 
 function keyDownToggle(ev) {
   if (pressedKey) return;
   if (actKeys.includes(ev.code)) pressedKey = ev.code;
-  if (ev.code === 'Space') callInterface.muteToggle();
 }
 function keyUpToggle(ev) {
   if (!pressedKey) return;
   if (actKeys.includes(ev.code)) pressedKey = null;
-  if (ev.code === 'Space' || ev.code === 'KeyM') callInterface.muteToggle();
-  if (ev.code === 'KeyV' && ev.ctrlKey===false) callInterface.cameraToggle();
+  if (ev.code === 'KeyD' && ev.ctrlKey === true) callInterface.muteToggle();
+  if (ev.code === 'KeyE' && ev.ctrlKey === true) callInterface.cameraToggle();
 }
 
 export { registerCallbacks, unregisterCallback };
