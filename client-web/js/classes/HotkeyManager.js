@@ -2,17 +2,11 @@ let callInterface;
 function registerCallbacks(ci) {
   callInterface = ci;
   window.addEventListener('keydown', keyDownToggle);
-  window.addEventListener('keyup', keyUpToggle);
 }
 
 function unregisterCallback() {
   window.removeEventListener('keydown', keyDownToggle);
-  window.removeEventListener('keyup', keyUpToggle);
 }
-
-const actKeys = ['KeyM', 'KeyV', 'Space'];
-
-let pressedKey = '';
 
 function keyDownToggle(ev) {
   if (pressedKey) return;
