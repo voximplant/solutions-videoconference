@@ -18,11 +18,6 @@ class LayerManagerClass {
   }
 
   show(cssClass) {
-    if (cssClass == 'conf__video-section-wrapper') {
-      console.log(
-        'Hotkeys:\nAlt((Option for Mac) + E toggle camera\nAlt(Option for Mac) + D toggle microphone'
-      );
-    }
     this.layers.forEach((layer) => {
       if (cssClass == 'conf__leave' && layer.classList.contains(cssClass)) {
         layer.style.display = 'flex';
