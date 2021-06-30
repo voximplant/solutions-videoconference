@@ -7,7 +7,7 @@ import { currentUser } from './User.js';
 import { LayerManager } from './LayerManager.js';
 import { SDKService } from './SDKService.js';
 import { registerCallbacks } from './HotkeyManager.js';
-import { ChatManager } from "./ChatManager.js";
+import { ChatManager } from './ChatManager.js';
 
 const container = document.getElementById('js__workbench');
 const inviteForm = document.querySelector('.js__invite-form');
@@ -67,20 +67,19 @@ export default class CallManager {
     console.log(`[WebSDk] message received:`, e);
     let payload = JSON.parse(e.text);
     const messenger = window.VoxImplant.getMessenger();
-    if(payload.owner){
+    if (payload.owner) {
       console.log('payload for owner', payload);
-      if(!payload.roomId) {
+      if (!payload.roomId) {
         ChatManager.create();
       } else {
         ChatManager.join(payload.roomId);
       }
-    }else {
+    } else {
       console.log('payload for non-owner', payload);
-      if(payload.roomId) {
+      if (payload.roomId) {
         ChatManager.join(payload.roomId);
       }
     }
-
   }
   updateChatManager(currentUser) {
     ChatManager.setConnectionId(currentUser.uuid);
@@ -122,7 +121,7 @@ export default class CallManager {
       false,
       currentUser.cameraStatus === 1 ? true : false
     );
-    if (Sentry) {
+    if (window.Sentry) {
       Sentry.setContext('session-id', { id: e.headers['X-Conf-Sess'] });
       Sentry.setUser({ username: currentUser.name, id: e.headers['X-Conf-Call'] });
     }
@@ -205,7 +204,7 @@ export default class CallManager {
         this.onRemoteMediaRemoved(e)
       );
 
-      if (!e.call.getEndpoints().filter(en => !en.isDefault).length) {
+      if (!e.call.getEndpoints().filter((en) => !en.isDefault).length) {
         inviteForm.classList.remove('hidden', 'popup-view');
       } else {
         inviteForm.classList.add('hidden', 'popup-view');
