@@ -18,7 +18,7 @@
   </head>
 
   <body
-    onload="Sentry.init({ dsn: 'https://f71e7f4af7ea4ef3885afceba345e1ac@o384963.ingest.sentry.io/5217005' });"
+    onload="window.Sentry && Sentry.init({ dsn: 'https://f71e7f4af7ea4ef3885afceba345e1ac@o384963.ingest.sentry.io/5217005' });"
   >
     <div class="conf">
       <div class="conf__container">
@@ -941,7 +941,7 @@
     <script src="vendor/voximplant.min.js"></script>
     <script src="js/customSelect.js"></script>
     <script type="module" src="js/settingsForm.js"></script>
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/main.js?seed=f"></script>
     <script src="js/addUsers.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="module" src="js/settingsMeeting.js"></script>
@@ -950,11 +950,11 @@
     <audio src="audio/512135__beezlefm__pop-up-sound.wav" id="js__message_sound"></audio>
     <script src="https://vc-stats.voximplant.com/lib/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js"></script>
-    <script
-      src="https://browser.sentry-cdn.com/5.15.5/bundle.min.js"
-      integrity="sha384-wF7Jc4ZlWVxe/L8Ji3hOIBeTgo/HwFuaeEfjGmS3EXAG7Y+7Kjjr91gJpJtr+PAT"
-      crossorigin="anonymous"
-    ></script>
+<!--    <script-->
+<!--      src="https://browser.sentry-cdn.com/5.15.5/bundle.min.js"-->
+<!--      integrity="sha384-wF7Jc4ZlWVxe/L8Ji3hOIBeTgo/HwFuaeEfjGmS3EXAG7Y+7Kjjr91gJpJtr+PAT"-->
+<!--      crossorigin="anonymous"-->
+<!--    ></script>-->
     <!-- get links from text-->
     <script src="https://raw.githack.com/alexcorvi/anchorme.js/gh-pages/dist/browser/anchorme.min.js"></script>
     <!-- Google Tag Manager -->

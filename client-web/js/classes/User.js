@@ -66,7 +66,7 @@ class UserClass {
   }
 
   updateSentry() {
-    if (Sentry) {
+    if (window.Sentry) {
       Sentry.setContext('service-id', { id: this.serviceId });
     }
   }
