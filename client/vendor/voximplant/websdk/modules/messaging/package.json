@@ -1,0 +1,6 @@
+{
+  "main": "./messaging.cjs.min.js",
+  "module": "./messaging.esm.min.js",
+  "unpkg": "./messaging.min.js",
+  "types": "./messaging.d.ts"
+}

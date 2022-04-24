@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "uuids",
+  "info": {
+    "name": "uuid",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false,
+    "increments": true,
+    "timestamps": true,
+    "comment": ""
+  },
+  "attributes": {
+    "long": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "short": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "uuids"
+    }
+  }
+}

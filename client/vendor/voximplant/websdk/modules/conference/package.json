@@ -1,0 +1,6 @@
+{
+  "main": "./conference.cjs.min.js",
+  "module": "./conference.esm.min.js",
+  "unpkg": "./conference.min.js",
+  "types": "./conference.d.ts"
+}

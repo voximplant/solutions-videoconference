@@ -1,0 +1,11 @@
+{
+  "name": "@voximplant/websdk",
+  "version": "5.0.16",
+  "main": "index.cjs.min.js",
+  "module": "index.esm.min.js",
+  "unpkg": "index.min.js",
+  "types": "index.d.ts",
+  "dependencies": {},
+  "homepage": "https://voximplant.com/docs/references/websdk",
+  "license": "SEE LICENSE IN LICENSE.MD"
+}

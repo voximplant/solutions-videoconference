@@ -1,0 +1,50 @@
+{
+  "name": "app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "develop:pm2": "yarn pm2 start ecosystem.config.js --only videoconf-backend-dev",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi",
+    "start:pm2": "yarn pm2 start ecosystem.config.js --only videoconf-backend"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@voximplant/apiclient-nodejs": "^2.0.3",
+    "any-base": "^1.1.0",
+    "google-auth-library": "^7.6.2",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "0.21.18",
+    "node-fetch": "^2.0.0",
+    "node-rsa": "^1.1.1",
+    "pg": "8.5.1",
+    "pm2": "^5.1.1",
+    "prettier": "^2.3.2",
+    "prettier-eslint": "^13.0.0",
+    "sqlite3": "^5.0.2",
+    "strapi": "3.6.6",
+    "strapi-admin": "3.6.6",
+    "strapi-connector-bookshelf": "3.6.6",
+    "strapi-plugin-content-manager": "3.6.6",
+    "strapi-plugin-content-type-builder": "3.6.6",
+    "strapi-plugin-email": "3.6.6",
+    "strapi-plugin-i18n": "3.6.6",
+    "strapi-plugin-upload": "3.6.6",
+    "strapi-plugin-users-permissions": "3.6.6",
+    "strapi-utils": "3.6.6"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "strapi": {
+    "uuid": "d2572cec-5dda-46d4-924a-9083647953f7"
+  },
+  "engines": {
+    "node": ">= 14.x.x",
+    "npm": "^6.0.0"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,67 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/uuids/get-short-uuid",
+      "handler": "uuid.getShortUUID",
+      "config": {
+        "policies": []
+      }
+    },{
+      "method": "POST",
+      "path": "/uuids/get-short-uuid-info",
+      "handler": "uuid.getLongUUID",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/uuids",
+      "handler": "uuid.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/uuids/count",
+      "handler": "uuid.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/uuids/:id",
+      "handler": "uuid.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/uuids",
+      "handler": "uuid.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/uuids/:id",
+      "handler": "uuid.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/uuids/:id",
+      "handler": "uuid.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

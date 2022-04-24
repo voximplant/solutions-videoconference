@@ -1,0 +1,6 @@
+{
+  "main": "./statistics.cjs.min.js",
+  "module": "./statistics.esm.min.js",
+  "unpkg": "./statistics.min.js",
+  "types": "./statistics.d.ts"
+}

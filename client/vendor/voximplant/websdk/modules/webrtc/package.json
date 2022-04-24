@@ -1,0 +1,6 @@
+{
+  "main": "./webrtc.cjs.min.js",
+  "module": "./webrtc.esm.min.js",
+  "unpkg": "./webrtc.min.js",
+  "types": "./webrtc.d.ts"
+}

@@ -1,0 +1,206 @@
+{
+  "join": {
+    "title": "Voximplant Video",
+    "description": "Powerful and customizable video calls",
+    "btn": "Join",
+    "wrongID": "Wrong conference ID"
+  },
+  "left": {
+    "title": "You left the meeting",
+    "goHome": "Go to the home screen",
+    "rejoin": "Rejoin",
+    "feedback": "Feedback"
+  },
+  "feedback": {
+    "assessment": {
+      "title": "Quality assessment",
+      "description": "Please, assess the audio and video quality",
+      "bad": "Bad",
+      "good": "Very good",
+      "submit": "Submit"
+    },
+    "category": {
+      "video": {
+        "title": "Video",
+        "notInSync": "Audio and video were not synchronized",
+        "breakingUp": "The video was breaking up",
+        "blurry": "The video was blurry",
+        "notSee": "I couldn't see others' video",
+        "cameraTrouble": "My camera didn't work",
+        "other": "Other video issue"
+      },
+      "audio": {
+        "title": "Audio",
+        "notHearMe": "Others couldn't hear me",
+        "breakingUp": "Audio was breaking up",
+        "delayed": "The sound was delayed",
+        "echo": "There was echo",
+        "notHearOthers": "I couldn't hear others",
+        "others": "Other audio issue"
+      },
+      "presentation": {
+        "title": "Presentation",
+        "blurry": "The presentation was blurry",
+        "slowUpdate": "The presentation was updating slow",
+        "notSee": "I couldn't see the presentation",
+        "notPresent": "I couldn't present",
+        "other": "Other presentation issue"
+      },
+      "other": {
+        "title": "Other",
+        "description": "What went wrong?",
+        "placeholder": "Describe your problem..."
+      }
+    },
+    "submit": "Submit"
+  },
+  "next": {
+    "title": "What's next",
+    "forDevelopers": {
+      "title": "Get the code and start building",
+      "description": "Visit GitHub to access the SDKs to start building and customizing video conferencing in your application. Set up your server, deploy the code and configure your video application."
+    },
+    "forNotDevelopers": {
+      "title": "Get a custom video solution for your business ",
+      "description": "Don’t have the time or resources to build your app? Get in touch - our team of Voximplant experts can help! We can write custom code and create a video solution to meet your exact business needs."
+    }
+  },
+  "layout": {
+    "change": "Change the video layout",
+    "description": "You can change the video layout and settings during a call. The layout changes in real time.",
+    "types": {
+      "grid": {
+        "name": "Grid",
+        "description": "All participants' video frames are the same size."
+      },
+      "tribune": {
+        "name": "Tribune",
+        "description": "Up to 4 participants' frames are bigger than the rest of the participants"
+      },
+      "demonstration": {
+        "name": "Demonstration",
+        "description": "One participant's frame is full screen, other participants are hidden"
+      }
+    }
+  },
+  "menuList": {
+    "generalSettings": "General settings",
+    "chat": "Chat",
+    "contactList": "Users",
+    "changeLayout": "Layout",
+    "privateMessages": "Send a private message",
+    "rename": "Rename yourself"
+  },
+  "speakerMenuList": {
+    "fullScreen": "Make full screen",
+    "allow": "Allow",
+    "toggleRemoteVideoOn": "Enable video",
+    "toggleRemoteVideoOff": "Disable video"
+  },
+  "invitePeople": {
+    "title": "Invite participants",
+    "description": "Share the meeting link to invite new participants",
+    "call": "Or provide the phone number and the PIN code to join",
+    "email": "Or send an invite to email",
+    "pin": "PIN",
+    "send": "Send invite",
+    "invite": "Invite users"
+  },
+  "settings": {
+    "audio": "Audio",
+    "video": "Video",
+    "microphone": "Microphone",
+    "profile": "Profile",
+    "shortcuts": "Keyboard shortcuts",
+    "speaker": "Speaker",
+    "camera": "Camera",
+    "quality": "Call quality",
+    "option": "General",
+    "technical": "Technical info"
+  },
+  "buttons": {
+    "sharingButtons": {
+      "withVideo": "Share your screen and camera",
+      "replace": "Share only your screen",
+      "withVideoAndAudio": "Share your screen with audio and camera"
+    },
+    "contact": {
+      "dismiss": "Dismiss",
+      "admit": "Admit"
+    },
+    "info": "Meeting info",
+    "screenShare": "Screen sharing",
+    "stopScreenShare": "Stop screen sharing",
+    "microphoneSettings": "Microphone settings",
+    "audioMute": "Mute audio",
+    "audioUnmute": "Unmute audio",
+    "audioSettings": "Audio settings",
+    "cameraOff": "Turn off the camera",
+    "cameraOn": "Turn on the camera",
+    "cameraSettings": "Camera settings",
+    "videoSettings": "Video settings",
+    "selectCamera": "Choose the camera",
+    "selectSpeaker": "Choose the speaker",
+    "selectMicrophone": "Choose the microphone",
+    "leave": "Leave the conference",
+    "reactions": "Reactions",
+    "users": "Users",
+    "chat": "Chat",
+    "settings": "Settings"
+  },
+  "userStatus": {
+    "inCall": "In a call",
+    "offline": "Offline"
+  },
+  "chat": {
+    "noMessage": "No message",
+    "placeholder": "Type message here... Shift+Enter to send",
+    "privateDescription": "Only you can see this message",
+    "privateBtn": "Private"
+  },
+  "form": {
+    "signIn": "Sign in",
+    "start": "Start a new meeting",
+    "joinTitle": "Join a conference",
+    "join": "Join",
+    "signWith": "or sign in with"
+  },
+
+  "fileInput": {
+    "title": "Attach files",
+    "attached": "Attached files",
+    "input": "Drop files to attach, or",
+    "browse": "browse.",
+    "maxSize": "Max file size is X MB",
+    "delete": "Delete all attached files",
+    "noFiles": "No attached files"
+  },
+
+  "error": {
+    "default": {
+      "title": "Something went wrong",
+      "description": "Please try again later."
+    },
+    "browserPermission": {
+      "title": "Allow access to your camera and microphone'",
+      "description": "Click Allow or Accept on the permission popup to grant access to your camera and microphone.",
+      "popUpTitle": "Camera and microphone are blocked",
+      "popUpDescription": "Allow access to your camera and microphone. Click on the camera and microphone icons in your browser bar. If your camera and a microphone didn't run automatically, try to refresh the page"
+    },
+    "noCamera": {
+      "title": "Allow access to your camera",
+      "description": "Allow access to your camera or join the conference in audio mode."
+    },
+    "abortError": {
+      "title": "Cannot access your devices",
+      "description": "Check if your devices are used in other applications or try to reload the page.'"
+    }
+  },
+
+  "others": "Others",
+  "signPug": "Please wait. Redirecting...",
+  "none": "None",
+  "back": "Back",
+  "cancel": "Cancel",
+  "done": "Done"
+}

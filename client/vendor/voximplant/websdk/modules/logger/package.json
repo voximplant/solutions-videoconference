@@ -1,0 +1,6 @@
+{
+  "main": "./logger.cjs.min.js",
+  "module": "./logger.esm.min.js",
+  "unpkg": "./logger.min.js",
+  "types": "./logger.d.ts"
+}

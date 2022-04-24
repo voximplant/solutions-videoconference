@@ -1,0 +1,89 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/auth",
+      "handler": "Auth.authController",
+      "config": {
+        "policies": [],
+        "prefix": "",
+        "description": "Successfull redirection after approving a provider",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/auth",
+      "handler": "Auth.authController",
+      "config": {
+        "policies": [],
+        "prefix": "",
+        "description": "Successfull redirection after approving a provider",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/apple-auth",
+      "handler": "Auth.appleAuth",
+      "config": {
+        "policies": [],
+        "prefix": "",
+        "description": "Successfull redirection after approving a provider",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/get-vox-token",
+      "handler": "Voximplant.getVoxOTT",
+      "config": {
+        "policies": [],
+        "prefix": "",
+        "description": "Returns voximplant sdk hash and one time token",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/users/me",
+      "handler": "User.me",
+      "config": {
+        "policies": [],
+        "prefix": "",
+        "description": "Retrieve the logged in user information",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User",
+          "actionType": "findOne"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/users/:userName",
+      "handler": "User.getUserByName",
+      "config": {
+        "policies": [],
+        "prefix": "",
+        "description": "Returns user by name",
+        "tag": {
+          "plugin": "users-permissions",
+          "name": "User"
+        }
+      }
+    }
+  ]
+}
