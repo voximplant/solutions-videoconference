@@ -187,281 +187,6 @@ yarn lint
 
 See the [configuration reference](https://cli.vuejs.org/config/).
 
-## Mirror store
-
-Mirror store processes local media: audio and video.
-
-```mermaid
-flowchart TD
-
-A[($mirrorStore)]
-V[Vue component] --> B{requestMirrorStream}
-B -->|updateLocalEndpoint| C[($endpointEventList)]
-B --> A
-D[AudioButton] --> |toggleMirrorAudioStream| A
-F[VideoButton] --> |toggleMirrorVideoStream| A
-
-A --> J{deviceWatcher}
-J-->A
-J -->|setActiveDevices| G[($devicesStore)]
-```
-
-Call `requestMirrorStream` to get tracks from local audio and video devices. It also processes possible errors, device changing, and microphone activity visualization. Call it each time you need to change the camera/microphone/headphones before or during a conference.
-
-Call `toggleMirrorAudioStream` each time you mute/unmute the microphone for conference participants.
-
-Call `toggleMirrorVideoStream` each time when you enable/disable the local camera device. Sending video streams to conference participants depends on this event.
-
-## Chat store
-
-The $chatContent store generates the conference ID and stores the information about the current conversation and its messages.
-Additionally, it provides the ability to send user reactions.
-
-```mermaid
-sequenceDiagram
-    participant Alice
-    participant SDK
-    participant Bob
-    participant John
-    Alice->>SDK: createConversation
-    SDK-->>Alice: currentConversation
-    Alice->>SDK: fetchInitialData
-    SDK-->>Alice: Users, Messages
-    Bob->>SDK: joinConversation
-    SDK-->>Bob: currentConversation
-    Bob->>SDK: fetchInitialData
-    SDK-->>Bob: Alice info
-    SDK-->>Alice: Bob joined
-    Bob->>SDK: subscribeChat
-    Alice->>SDK: sendMessage ('Hi, Bob. Nice to see you!')
-    SDK-->>Bob: MessageReceived from Alice ('Hi, Bob. Nice to see you!')
-    John->>SDK: joinConversation
-    SDK-->>John: currentConversation
-    John->>SDK: fetchInitialData
-    John->>SDK: subscribeChat
-    SDK-->>John: Bob and Alice info
-    SDK-->>John: previous messages (MessageReceived from Alice ('Hi, Bob. Nice to see you!'))
-    SDK-->>Alice: John joined
-    SDK-->>Bob: John joined
-    Alice->>SDK: sendMessage ('Hi, John. How are you?')
-    SDK-->>John: MessageReceived from Alice ('Hi, John. How are you?')
-    SDK-->>Bob: MessageReceived from Alice ('Hi, John. How are you?')
-```
-
-To start a chat, create a new conversation via the `createChat` event, or join an existing chat via the `joinChat` event. These events return the current conversation, but you need to additionally call the `fetchInitialData` event to retrieve all existing participants and messages.
-
-The `subscribeChat` event subscribes to the conversation events, such as receiving new messages, adding new participants, and others.  
-To send a message into the conversation, call the `sendMessageToAll` event.
-Call the `updateChatContent` event to update the chat after some changes happen, like receiving a new message or a reaction.
-
-After finishing the conference, you need to clear the store via the `clearChat` event, which unsubscribes from all the events and cleares the store.
-
-```mermaid
-flowchart TD
-A[($meeting)]-->|createConversation/joinConversation| B[($chatContent)]
-C -->|updateReaction| F[($reactions)]
-C --> B
-B --> E{subscribeChat}
-E --> C{updateChatContent}
-E -->|updateUsers| D[($users)]
-B --> G{fetchInitialData}
-G --> |updateUsers| D
-G --> C
-```
-
-## Video layouts management
-
-There are 3 layout types in the current project version. You can find them in the `client/src/helpers/layouts` folder. The `index.ts` file initializes the layout types and provides tools to work with them.
-
-### Layout processing scheme
-
-```mermaid
-flowchart TD
-
-A[($layout)]
-V[SharingButton.vue] --> |toggleSharing| B
-L[changeLayout.vue] --> |changeLayoutType| D
-B[($sharing)] --> |combine gridBuilder| A
-D[($layoutType)] --> |combine gridBuilder| A
-M[ResizeObserver] --> |resizeVideoSlot| F
-F[($canvas)] --> |combine gridBuilder| A
-O[($endpoints)] --> |map| E
-E[($hasEndpointSharing)] --> |combine gridBuilder| A
-
-G --> J{composeVideo}
-J -->|RenderVideoStore| G
-A -->|composeVideo| G[($renderVideo)] 
-H[LayoutsVideo.vue] --> |Render DOM| G
-```
-
-#### store
-
-`$sharing` contains the information about local user's screen sharing
-`$layoutType` contains the information about the current layout (grid by default)
-`$canvas` contains the information about the current nest size
-`$hasEndpointSharing` defines the screen sharing presence flag for conference participants
-`$layout` contains the grid and conference participants' video options
-
-#### event
-
-`toggleSharing` triggers when screen sharing toggles, for example, when a new screen sharing is added (addSharing event)
-`changeLayoutType` triggers when a participant changes its layout
-`resizeVideoSlot` triggers when a video nest changes its resolutions or when ResizeObserver triggers in LayoutsPanel.vue
-
-#### combine function
-
-`gridBuilder` returns a layout from a `gridList` depending on the incoming data from the store:
-- presence of screen sharing
-- video nest resolution
-- layout type
-
-`composeVideo` sends the generated layout settings from `$layout` to the tiler and returns a grid.
-
-#### Scheme description
-
-`$layout` stores the grid configuration options and the participants' priorities.  
-These options are declared in constants and stored in `$layout` depending on the layout usage conditions.
-
-### Conference layout definition
-
-Layout building options are stored in `$layout` and defined via the `gridBuilder` method.  
-The method's result depends on 3 major criteria:
-
-1. Video nest resolution. Depending on the resolution, the `getScreenKind` function returns the screen type:
-- large (width >= 1920 && height >= 1080)
-- mobile (height > width)
-- default (if not large or mobile)
-
-2. Presence of screen sharing in the conference. If a screen sharing is detected while receiving the grid type, the `Screen` option appears in the `GridKind` function.  
-   In this case, the grid type returns `mobileScreen` instead of `mobile`.
-
-3. User's layout type. This value is stored in `$layoutType`. A user can change the layout type at the start or during the conference. When it happens, the `changeLayoutType` event triggers in the changeLayout.vue component.
-
-Based on these 3 criteria, the `gridBuilder` method returns the `gridList` object, where the key is the current layout type, and the property name contains the video nest resolution and the presence of screen sharing.
-
-### Reordering participants within a layout
-
-Layout reordering functions are located in the `client/src/helpers/layout-reordering` folder.  
-Grid reordering parameters are located in the `reorderTiles` option and used during the grid creation.
-
-#### 1. Participants reordering function
-
-Each layout file has the `ReorderFunction` function which returns the `reorderByVad` function. It manages participants reordering according to the `$conferenceEndpointsState` store by VAD (voice activity detection). To fix the local video, use the `fixLocalVideo` function.
-
-#### 2. The process of reordering participants
-
-You can reorder participants according to the `$conferenceEndpointsState` store's VAD parameter. The participants' order is defined by triggering the following events: `[ConferenceEvents.vad, ConferenceEvents.mute]`. These events trigger when you toggle/activate the microphone and update the store. Reordering via VAD parameter can happen only within one grid, by changing the priority property. If you want to show the local video with the highest priority, change the `fixLocalVideo`'s position parameter to `"first"`.
-
-### Grid overflow checkpoints
-
-Grid overflow checkpoints for each grid type are stored in the `overflowCheckpoint` constant within the `client/src/helpers/layouts/index.ts` file. If you try to fit more participants than the grid allows, you will get a `usersOverflowMock.vue` for each overflown participant. They contain avatars of the overflown participants (up to 3 people) and the number of overflown participants. You can check if a participant fits in a certain grid in the `VideoSlot.vue` file.
-
-### Layout types and descriptions
-
-#### Grid
-
-All participants have the same size video nests and are displayed one by one. The maximum video nest count is stored in the `overflowCheckpoint.grid` constant within the `index.ts` file.
-
-When a participant shares their screen, the screen sharing takes 85% of the screen width. All the participants are displayed as a column of 15% of the screen width to the right (up to 5 participants) and a placeholder for the overflown participants.
-
-![Grid.png](./client/src/assets/images/layouts/grid_layout.jpg)
-
-#### Tribune
-
-The screen is divided into two areas. The first area takes 70% of the screen width and displays 4 active participants. The rest participants are displayed as a column of 30% of the screen width and a placeholder for the overflown participants.
-
-When a participant shares their screen, the screen sharing takes 85% of the screen width. All the participants are displayed as a column of 15% of the screen width to the right (up to 5 participants) and a placeholder for the overflown participants.
-
-#### Demonstration
-
-The first participant's video takes the whole screen. The second participant's video is displayed at the right bottom corner of the screen on top of the first participant's video with a 29x25% of image size.  
-If there are more than two participants, a placeholder with information and the participants' count is displayed instead of the second participant's video.
-
-When a participant shares their screen, the screen sharing takes the whole screen. The participant's count is displayed in the right bottom corner.
-
-![Demonstration.png](./client/src/assets/images/layouts/demonstration_layout.jpg)
-
-### How to create a custom layout
-
-- create a file with your layout name and place it in the `client/src/helpers/layouts` folder
-- create constants for layout building options. Read more in the [@voximplant/tiler documentation](https://github.com/voximplant/tiler#quickstart)
-- create a `TileInterface` format map, which contains layout building options
-- if you need to reorder participants within a grid, prepare a grid reordering function with `ReorderFunction`, where you can implement participants reordering logic
-- export the function responsible for returning grid settings and reordering logic, for example, `createGridLayout`
-- add your grid to LayoutTypeMap
-- add a special property to `gridList`, where the key is `[LayoutTypeMap.yourLayout]`, and the value is the function responsible for returning grid settings and reordering logic
-- add a special property to `overflowCheckpoint`, where the key is `[LayoutTypeMap.yourLayout]`, and the value is the overflow points for each layout type
-
-### How to delete a layout
-
-- delete the layout from the `LayoutTypeMap` constant
-- delete the TS file from the `client/src/helpers/layouts` folder
-- delete the overflow checkpoints from the `overflowCheckpoint` constant
-- delete the layout from the `gridList` constant
-- delete the layout and its description from the `layoutItemsMobile` and `layoutItems` constants within `ChangeLayout.vue`
-
-### How to customize an existing layout
-
-Let us take a look at layout customization with several examples:
-
-1. If you need to limit the participant number in the main section to 1:
-- find the layout file, which contains the `client/src/helpers/layouts/tribune` grid options
-- find the constant with the necessary grid type, for example, `tribuneDefault`
-- find the first section in the grid building option (priority: 1)
-- find the grid property
-- delete 2,3,4 participants processing, leaving only 1 object:  
-  `{ fromCount: 1, toCount: 1, colCount: 1, rowCount: 1, margin: 12 }`
-- change the participants overflow checkpoint value in `overflowCheckpoint.[LayoutTypeMap.tribune].default` to 5 (1 participant from `priority: 1` and 4 participants from `priority: 2`)
-
-Done. Now the first section has 1 participant only and the rest participants are in the column to the right.
-
-2. If you want to limit the grid layout participants to N:
-- find the layout file, which contains the `client/src/helpers/layouts/grid` grid options
-- find the constant with the necessary grid type, for example, `grideMobile`
-- find the grid property
-- delete the excess objects, leaving only N objects you need:
-
-```javascript
-grid: [
-        { fromCount: 1, toCount: 1, colCount: 1, rowCount: 1, margin: 0 },
-        { fromCount: 2, toCount: 2, colCount: 1, rowCount: 2, margin: 5 },
-        { fromCount: 3, toCount: N, colCount: 2, rowCount: 2, margin: 5 }
-]
-```
-
-- change the participants overflow checkpoint value in `overflowCheckpoint.[LayoutTypeMap.grid].default` to N
-
-Done. Now in the mobile version, there are only N participants displayed, and if there are more participants, a placeholder with the number of overflown participants appears.
-
-## Device store
-
-This store processes the information about all the available local media devices, all the active media devices, and the information on the current local audio/video stream and its quality. If you need to get all user devices, change the microphone, speaker, or camera, mute audio or disable the local camera, take a look at the following events.
-
-```mermaid
-flowchart RL
-    
-A[($devices)]
-J[Join.vue] --> |getDevices| A
-J[Join.vue] --> |toggleVideoDisabled| A
-E[ondevicechange] --> S{setActiveDevices}
-V[Video.vue] --> S
-S--> A
-V --> |setVideoQuality| A
-AB[AudioButton.vue] --> |toggleAudioEvent| A
-AB[AudioButton.vue] --> |selectSpeakerDevice| A
-VB[VideoButton.vue] --> |toggleVideoEvent| A
-```
-
-The `getDevices` event returns all available user devices, such as the microphone, speaker, and camera. This event also specifies the default and active system devices.  
-The `setActiveDevices` event updates the information about active devices but does not change the media stream. To change the media stream, use `requestMirrorStream`.  
-To change the speaker device, use the `selectSpeakerDevice` event. It updates the store and changes the current user's speaker.  
-This store also processes connecting new system devices and disconnecting the existing ones. When you connect a new sound device during a conference, the store chooses it as the active one. When you disconnect an active sound device during a conference, you need to choose a new one from the existing device list. When you connect a new camera during a conference, the store just updates the device list but does not choose the device as the active one. When you disconnect a camera during a conference, the store stops sending the video stream.
-
-The `toggleAudioEvent` and `toggleVideoEvent` events process the microphone and camera usage status accordingly. To toggle the microphone and camera, use the `toggleMirrorAudioStream` and `toggleMirrorVideoStream` events.
-
-The `toggleVideoDisabled` event allows developers to disable a participant's camera permanently, in case of camera unavailability.
-`setVideoQuality` allows developers to choose the video quality for outbound video. If you choose the quality lower than 480p, the simulcast will be disabled.
-
 ## UI customization
 
 Videoconf is based on the [SpaceUI](https://www.npmjs.com/package/@voximplant/spaceui) library.
@@ -729,3 +454,278 @@ Here is what it looks like now:
 As you can see, your messages are highlighted in blue.
 
 Thus, you can rewrite any component the way you like, and change the appearance and functionality.
+
+## Video layouts management
+
+There are 3 layout types in the current project version. You can find them in the `client/src/helpers/layouts` folder. The `index.ts` file initializes the layout types and provides tools to work with them.
+
+### Layout processing scheme
+
+```mermaid
+flowchart TD
+
+A[($layout)]
+V[SharingButton.vue] --> |toggleSharing| B
+L[changeLayout.vue] --> |changeLayoutType| D
+B[($sharing)] --> |combine gridBuilder| A
+D[($layoutType)] --> |combine gridBuilder| A
+M[ResizeObserver] --> |resizeVideoSlot| F
+F[($canvas)] --> |combine gridBuilder| A
+O[($endpoints)] --> |map| E
+E[($hasEndpointSharing)] --> |combine gridBuilder| A
+
+G --> J{composeVideo}
+J -->|RenderVideoStore| G
+A -->|composeVideo| G[($renderVideo)] 
+H[LayoutsVideo.vue] --> |Render DOM| G
+```
+
+#### store
+
+`$sharing` contains the information about local user's screen sharing
+`$layoutType` contains the information about the current layout (grid by default)
+`$canvas` contains the information about the current nest size
+`$hasEndpointSharing` defines the screen sharing presence flag for conference participants
+`$layout` contains the grid and conference participants' video options
+
+#### event
+
+`toggleSharing` triggers when screen sharing toggles, for example, when a new screen sharing is added (addSharing event)
+`changeLayoutType` triggers when a participant changes its layout
+`resizeVideoSlot` triggers when a video nest changes its resolutions or when ResizeObserver triggers in LayoutsPanel.vue
+
+#### combine function
+
+`gridBuilder` returns a layout from a `gridList` depending on the incoming data from the store:
+- presence of screen sharing
+- video nest resolution
+- layout type
+
+`composeVideo` sends the generated layout settings from `$layout` to the tiler and returns a grid.
+
+#### Scheme description
+
+`$layout` stores the grid configuration options and the participants' priorities.  
+These options are declared in constants and stored in `$layout` depending on the layout usage conditions.
+
+### Conference layout definition
+
+Layout building options are stored in `$layout` and defined via the `gridBuilder` method.  
+The method's result depends on 3 major criteria:
+
+1. Video nest resolution. Depending on the resolution, the `getScreenKind` function returns the screen type:
+- large (width >= 1920 && height >= 1080)
+- mobile (height > width)
+- default (if not large or mobile)
+
+2. Presence of screen sharing in the conference. If a screen sharing is detected while receiving the grid type, the `Screen` option appears in the `GridKind` function.  
+   In this case, the grid type returns `mobileScreen` instead of `mobile`.
+
+3. User's layout type. This value is stored in `$layoutType`. A user can change the layout type at the start or during the conference. When it happens, the `changeLayoutType` event triggers in the changeLayout.vue component.
+
+Based on these 3 criteria, the `gridBuilder` method returns the `gridList` object, where the key is the current layout type, and the property name contains the video nest resolution and the presence of screen sharing.
+
+### Reordering participants within a layout
+
+Layout reordering functions are located in the `client/src/helpers/layout-reordering` folder.  
+Grid reordering parameters are located in the `reorderTiles` option and used during the grid creation.
+
+#### 1. Participants reordering function
+
+Each layout file has the `ReorderFunction` function which returns the `reorderByVad` function. It manages participants reordering according to the `$conferenceEndpointsState` store by VAD (voice activity detection). To fix the local video, use the `fixLocalVideo` function.
+
+#### 2. The process of reordering participants
+
+You can reorder participants according to the `$conferenceEndpointsState` store's VAD parameter. The participants' order is defined by triggering the following events: `[ConferenceEvents.vad, ConferenceEvents.mute]`. These events trigger when you toggle/activate the microphone and update the store. Reordering via VAD parameter can happen only within one grid, by changing the priority property. If you want to show the local video with the highest priority, change the `fixLocalVideo`'s position parameter to `"first"`.
+
+### Grid overflow checkpoints
+
+Grid overflow checkpoints for each grid type are stored in the `overflowCheckpoint` constant within the `client/src/helpers/layouts/index.ts` file. If you try to fit more participants than the grid allows, you will get a `usersOverflowMock.vue` for each overflown participant. They contain avatars of the overflown participants (up to 3 people) and the number of overflown participants. You can check if a participant fits in a certain grid in the `VideoSlot.vue` file.
+
+### Layout types and descriptions
+
+#### Grid
+
+All participants have the same size video nests and are displayed one by one. The maximum video nest count is stored in the `overflowCheckpoint.grid` constant within the `index.ts` file.
+
+When a participant shares their screen, the screen sharing takes 85% of the screen width. All the participants are displayed as a column of 15% of the screen width to the right (up to 5 participants) and a placeholder for the overflown participants.
+
+![Grid.png](./client/src/assets/images/layouts/grid_layout.jpg)
+
+#### Tribune
+
+The screen is divided into two areas. The first area takes 70% of the screen width and displays 4 active participants. The rest participants are displayed as a column of 30% of the screen width and a placeholder for the overflown participants.
+
+When a participant shares their screen, the screen sharing takes 85% of the screen width. All the participants are displayed as a column of 15% of the screen width to the right (up to 5 participants) and a placeholder for the overflown participants.
+
+#### Demonstration
+
+The first participant's video takes the whole screen. The second participant's video is displayed at the right bottom corner of the screen on top of the first participant's video with a 29x25% of image size.  
+If there are more than two participants, a placeholder with information and the participants' count is displayed instead of the second participant's video.
+
+When a participant shares their screen, the screen sharing takes the whole screen. The participant's count is displayed in the right bottom corner.
+
+![Demonstration.png](./client/src/assets/images/layouts/demonstration_layout.jpg)
+
+### How to create a custom layout
+
+- create a file with your layout name and place it in the `client/src/helpers/layouts` folder
+- create constants for layout building options. Read more in the [@voximplant/tiler documentation](https://github.com/voximplant/tiler#quickstart)
+- create a `TileInterface` format map, which contains layout building options
+- if you need to reorder participants within a grid, prepare a grid reordering function with `ReorderFunction`, where you can implement participants reordering logic
+- export the function responsible for returning grid settings and reordering logic, for example, `createGridLayout`
+- add your grid to LayoutTypeMap
+- add a special property to `gridList`, where the key is `[LayoutTypeMap.yourLayout]`, and the value is the function responsible for returning grid settings and reordering logic
+- add a special property to `overflowCheckpoint`, where the key is `[LayoutTypeMap.yourLayout]`, and the value is the overflow points for each layout type
+
+### How to delete a layout
+
+- delete the layout from the `LayoutTypeMap` constant
+- delete the TS file from the `client/src/helpers/layouts` folder
+- delete the overflow checkpoints from the `overflowCheckpoint` constant
+- delete the layout from the `gridList` constant
+- delete the layout and its description from the `layoutItemsMobile` and `layoutItems` constants within `ChangeLayout.vue`
+
+### How to customize an existing layout
+
+Let us take a look at layout customization with several examples:
+
+1. If you need to limit the participant number in the main section to 1:
+- find the layout file, which contains the `client/src/helpers/layouts/tribune` grid options
+- find the constant with the necessary grid type, for example, `tribuneDefault`
+- find the first section in the grid building option (priority: 1)
+- find the grid property
+- delete 2,3,4 participants processing, leaving only 1 object:  
+  `{ fromCount: 1, toCount: 1, colCount: 1, rowCount: 1, margin: 12 }`
+- change the participants overflow checkpoint value in `overflowCheckpoint.[LayoutTypeMap.tribune].default` to 5 (1 participant from `priority: 1` and 4 participants from `priority: 2`)
+
+Done. Now the first section has 1 participant only and the rest participants are in the column to the right.
+
+2. If you want to limit the grid layout participants to N:
+- find the layout file, which contains the `client/src/helpers/layouts/grid` grid options
+- find the constant with the necessary grid type, for example, `grideMobile`
+- find the grid property
+- delete the excess objects, leaving only N objects you need:
+
+```javascript
+grid: [
+        { fromCount: 1, toCount: 1, colCount: 1, rowCount: 1, margin: 0 },
+        { fromCount: 2, toCount: 2, colCount: 1, rowCount: 2, margin: 5 },
+        { fromCount: 3, toCount: N, colCount: 2, rowCount: 2, margin: 5 }
+]
+```
+
+- change the participants overflow checkpoint value in `overflowCheckpoint.[LayoutTypeMap.grid].default` to N
+
+Done. Now in the mobile version, there are only N participants displayed, and if there are more participants, a placeholder with the number of overflown participants appears.
+
+## Mirror store
+
+Mirror store processes local media: audio and video.
+
+```mermaid
+flowchart TD
+
+A[($mirrorStore)]
+V[Vue component] --> B{requestMirrorStream}
+B -->|updateLocalEndpoint| C[($endpointEventList)]
+B --> A
+D[AudioButton] --> |toggleMirrorAudioStream| A
+F[VideoButton] --> |toggleMirrorVideoStream| A
+
+A --> J{deviceWatcher}
+J-->A
+J -->|setActiveDevices| G[($devicesStore)]
+```
+
+Call `requestMirrorStream` to get tracks from local audio and video devices. It also processes possible errors, device changing, and microphone activity visualization. Call it each time you need to change the camera/microphone/headphones before or during a conference.
+
+Call `toggleMirrorAudioStream` each time you mute/unmute the microphone for conference participants.
+
+Call `toggleMirrorVideoStream` each time when you enable/disable the local camera device. Sending video streams to conference participants depends on this event.
+
+## Device store
+
+This store processes the information about all the available local media devices, all the active media devices, and the information on the current local audio/video stream and its quality. If you need to get all user devices, change the microphone, speaker, or camera, mute audio or disable the local camera, take a look at the following events.
+
+```mermaid
+flowchart RL
+    
+A[($devices)]
+J[Join.vue] --> |getDevices| A
+J[Join.vue] --> |toggleVideoDisabled| A
+E[ondevicechange] --> S{setActiveDevices}
+V[Video.vue] --> S
+S--> A
+V --> |setVideoQuality| A
+AB[AudioButton.vue] --> |toggleAudioEvent| A
+AB[AudioButton.vue] --> |selectSpeakerDevice| A
+VB[VideoButton.vue] --> |toggleVideoEvent| A
+```
+
+The `getDevices` event returns all available user devices, such as the microphone, speaker, and camera. This event also specifies the default and active system devices.  
+The `setActiveDevices` event updates the information about active devices but does not change the media stream. To change the media stream, use `requestMirrorStream`.  
+To change the speaker device, use the `selectSpeakerDevice` event. It updates the store and changes the current user's speaker.  
+This store also processes connecting new system devices and disconnecting the existing ones. When you connect a new sound device during a conference, the store chooses it as the active one. When you disconnect an active sound device during a conference, you need to choose a new one from the existing device list. When you connect a new camera during a conference, the store just updates the device list but does not choose the device as the active one. When you disconnect a camera during a conference, the store stops sending the video stream.
+
+The `toggleAudioEvent` and `toggleVideoEvent` events process the microphone and camera usage status accordingly. To toggle the microphone and camera, use the `toggleMirrorAudioStream` and `toggleMirrorVideoStream` events.
+
+The `toggleVideoDisabled` event allows developers to disable a participant's camera permanently, in case of camera unavailability.
+`setVideoQuality` allows developers to choose the video quality for outbound video. If you choose the quality lower than 480p, the simulcast will be disabled.
+
+## Chat store
+
+The $chatContent store generates the conference ID and stores the information about the current conversation and its messages.
+Additionally, it provides the ability to send user reactions.
+
+```mermaid
+sequenceDiagram
+    participant Alice
+    participant SDK
+    participant Bob
+    participant John
+    Alice->>SDK: createConversation
+    SDK-->>Alice: currentConversation
+    Alice->>SDK: fetchInitialData
+    SDK-->>Alice: Users, Messages
+    Bob->>SDK: joinConversation
+    SDK-->>Bob: currentConversation
+    Bob->>SDK: fetchInitialData
+    SDK-->>Bob: Alice info
+    SDK-->>Alice: Bob joined
+    Bob->>SDK: subscribeChat
+    Alice->>SDK: sendMessage ('Hi, Bob. Nice to see you!')
+    SDK-->>Bob: MessageReceived from Alice ('Hi, Bob. Nice to see you!')
+    John->>SDK: joinConversation
+    SDK-->>John: currentConversation
+    John->>SDK: fetchInitialData
+    John->>SDK: subscribeChat
+    SDK-->>John: Bob and Alice info
+    SDK-->>John: previous messages (MessageReceived from Alice ('Hi, Bob. Nice to see you!'))
+    SDK-->>Alice: John joined
+    SDK-->>Bob: John joined
+    Alice->>SDK: sendMessage ('Hi, John. How are you?')
+    SDK-->>John: MessageReceived from Alice ('Hi, John. How are you?')
+    SDK-->>Bob: MessageReceived from Alice ('Hi, John. How are you?')
+```
+
+To start a chat, create a new conversation via the `createChat` event, or join an existing chat via the `joinChat` event. These events return the current conversation, but you need to additionally call the `fetchInitialData` event to retrieve all existing participants and messages.
+
+The `subscribeChat` event subscribes to the conversation events, such as receiving new messages, adding new participants, and others.  
+To send a message into the conversation, call the `sendMessageToAll` event.
+Call the `updateChatContent` event to update the chat after some changes happen, like receiving a new message or a reaction.
+
+```mermaid
+flowchart TD
+A[($meeting)]-->|createConversation/joinConversation| B[($chatContent)]
+C -->|updateReaction| F[($reactions)]
+C --> B
+B --> E{subscribeChat}
+E --> C{updateChatContent}
+E -->|updateUsers| D[($users)]
+B --> G{fetchInitialData}
+G --> |updateUsers| D
+G --> C
+```
+
+After finishing the conference, you need to clear the store via the `clearChat` event, which unsubscribes from all the events and cleares the store.
