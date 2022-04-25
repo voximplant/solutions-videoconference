@@ -10,7 +10,7 @@
     "commitlint": "commitlint"
   },
   "dependencies": {
-    "@voximplant/spaceui": "2.11.0",
+    "@voximplant/spaceui": "2.10.0",
     "@voximplant/tiler": "1.4.4",
     "@voximplant/websdk": "./vendor/voximplant/websdk",
     "bowser": "2.11.0",
