@@ -681,32 +681,32 @@ Additionally, it provides the ability to send user reactions.
 ```mermaid
 sequenceDiagram
     participant Alice
-    participant SDK
+    participant Voximplant
     participant Bob
     participant John
-    Alice->>SDK: createConversation
-    SDK-->>Alice: currentConversation
-    Alice->>SDK: fetchInitialData
-    SDK-->>Alice: Users, Messages
-    Bob->>SDK: joinConversation
-    SDK-->>Bob: currentConversation
-    Bob->>SDK: fetchInitialData
-    SDK-->>Bob: Alice info
-    SDK-->>Alice: Bob joined
-    Bob->>SDK: subscribeChat
-    Alice->>SDK: sendMessage ('Hi, Bob. Nice to see you!')
-    SDK-->>Bob: MessageReceived from Alice ('Hi, Bob. Nice to see you!')
-    John->>SDK: joinConversation
-    SDK-->>John: currentConversation
-    John->>SDK: fetchInitialData
-    John->>SDK: subscribeChat
-    SDK-->>John: Bob and Alice info
-    SDK-->>John: previous messages (MessageReceived from Alice ('Hi, Bob. Nice to see you!'))
-    SDK-->>Alice: John joined
-    SDK-->>Bob: John joined
-    Alice->>SDK: sendMessage ('Hi, John. How are you?')
-    SDK-->>John: MessageReceived from Alice ('Hi, John. How are you?')
-    SDK-->>Bob: MessageReceived from Alice ('Hi, John. How are you?')
+    Alice->>Voximplant: createConversation
+    Voximplant-->>Alice: currentConversation
+    Alice->>Voximplant: fetchInitialData
+    Voximplant-->>Alice: Users, Messages
+    Bob->>Voximplant: joinConversation
+    Voximplant-->>Bob: currentConversation
+    Bob->>Voximplant: fetchInitialData
+    Voximplant-->>Bob: Alice info
+    Voximplant-->>Alice: Bob joined
+    Bob->>Voximplant: subscribeChat
+    Alice->>Voximplant: sendMessage ('Hi, Bob. Nice to see you!')
+    Voximplant-->>Bob: MessageReceived from Alice ('Hi, Bob. Nice to see you!')
+    John->>Voximplant: joinConversation
+    Voximplant-->>John: currentConversation
+    John->>Voximplant: fetchInitialData
+    John->>Voximplant: subscribeChat
+    Voximplant-->>John: Bob and Alice info
+    Voximplant-->>John: previous messages (MessageReceived from Alice ('Hi, Bob. Nice to see you!'))
+    Voximplant-->>Alice: John joined
+    Voximplant-->>Bob: John joined
+    Alice->>Voximplant: sendMessage ('Hi, John. How are you?')
+    Voximplant-->>John: MessageReceived from Alice ('Hi, John. How are you?')
+    Voximplant-->>Bob: MessageReceived from Alice ('Hi, John. How are you?')
 ```
 
 To start a chat, create a new conversation via the `createChat` event, or join an existing chat via the `joinChat` event. These events return the current conversation, but you need to additionally call the `fetchInitialData` event to retrieve all existing participants and messages.
