@@ -24,7 +24,7 @@
     "pm2": "^5.1.1",
     "prettier": "^2.3.2",
     "prettier-eslint": "^13.0.0",
-    "sqlite3": "^5.0.2",
+    "sqlite3": "^5.0.3",
     "strapi": "3.6.6",
     "strapi-admin": "3.6.6",
     "strapi-connector-bookshelf": "3.6.6",
