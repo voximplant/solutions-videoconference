@@ -24,7 +24,7 @@ Signing up and signing in are processed via a backend server.
 ### Backend deployment and setup
 
 The backend server provides signing up/signing in and other information for the client.  
-[videoconf-backend project and documentation](https://github.com/voximplant/solutions-videoconference/tree/master/backend).
+[videoconf-backend project and documentation](https://github.com/voximplant/solutions-videoconference/tree/master/server).
 
 #### .env file configuration
 
