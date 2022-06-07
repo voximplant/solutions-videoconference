@@ -25,7 +25,7 @@
     "prettier": "^2.3.2",
     "prettier-eslint": "^13.0.0",
     "sqlite3": "^5.0.2",
-    "strapi": "3.6.6",
+    "strapi": "3.6.10",
     "strapi-admin": "3.6.6",
     "strapi-connector-bookshelf": "3.6.6",
     "strapi-plugin-content-manager": "3.6.6",
