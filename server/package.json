@@ -16,7 +16,7 @@
     "@voximplant/apiclient-nodejs": "^2.0.3",
     "any-base": "^1.1.0",
     "google-auth-library": "^7.6.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "knex": "0.21.18",
     "node-fetch": "^2.0.0",
     "node-rsa": "^1.1.1",
