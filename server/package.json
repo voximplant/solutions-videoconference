@@ -17,7 +17,7 @@
     "any-base": "^1.1.0",
     "google-auth-library": "^7.6.2",
     "jsonwebtoken": "^8.5.1",
-    "knex": "0.21.18",
+    "knex": "2.4.0",
     "node-fetch": "^2.0.0",
     "node-rsa": "^1.1.1",
     "pg": "8.5.1",
